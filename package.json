@@ -39,5 +39,18 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.8",
     "typescript": "^5"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "not ie 11"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
