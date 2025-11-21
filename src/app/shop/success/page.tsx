@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import { FiCheckCircle, FiArrowLeft } from 'react-icons/fi';
 
+// Force dynamic rendering since this page depends on URL parameters from Stripe redirect
+export const dynamic = 'force-dynamic';
+
 export default function SuccessPage() {
   const { clearCart } = useCart();
   const hasCleared = useRef(false);
