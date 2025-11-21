@@ -8,12 +8,12 @@ import FeaturedBlogPost from "@/components/sections/FeaturedBlogPost";
 import UpcomingRelease from "@/components/sections/UpcomingRelease";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import { PortableText } from "@portabletext/react";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 
 // Using generated types from @/sanity/types instead of manual interface
 
 async function getHomePageData(): Promise<HomePageQueryResult | null> {
-  console.log('🔍 Fetching Home Page data from Sanity...');
-  
   try {
     const data = await fetchSanity<HomePageQueryResult>(
       homePageQuery,
@@ -26,22 +26,37 @@ async function getHomePageData(): Promise<HomePageQueryResult | null> {
     
     return data;
   } catch (error) {
-    console.error('❌ Error fetching Sanity data:', error);
+    console.error('Error fetching Sanity data:', error);
     return null;
   }
 }
 
-export default async function Home() {
-  console.log('🏠 Rendering Home page, attempting to fetch data...');
-  
+export async function generateMetadata(): Promise<Metadata> {
   const data = await getHomePageData();
   
   if (!data) {
-    console.log('❌ Home page received no data from getHomePageData.');
+    return {
+      title: 'Sophron Studies',
+      description: 'Reformed Bible studies for women.',
+    };
+  }
+
+  const fallbackImage = data.heroSection?.backgroundImage?.asset;
+  
+  return generateSEOMetadata(
+    data.seo || null,
+    data.title || 'Sophron Studies',
+    'Reformed Bible studies for women.',
+    fallbackImage
+  );
+}
+
+export default async function Home() {
+  const data = await getHomePageData();
+  
+  if (!data) {
     return <div>Error loading page data. Please try again later.</div>;
   }
-  
-  console.log('🎉 Home page received data, rendering components...');
 
   // Helper functions to handle null coalescing
   const renderPortableText = (content: any) => {

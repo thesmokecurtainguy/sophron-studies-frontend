@@ -12,7 +12,7 @@ const postFields = `
   excerpt,
   content,
   "slug": slug.current,
-  coverImage,
+  coverImage {alt, asset->},
   "author": {
     "name": author->name,
     "avatar": author->avatar
@@ -21,7 +21,18 @@ const postFields = `
   readingTime,
   category,
   tags,
-  featured
+  featured,
+  seo {
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    ogImage {alt, asset->},
+    ogTitle,
+    ogDescription,
+    canonicalUrl,
+    noIndex,
+    noFollow
+  }
 `
 
 // Get all blog posts

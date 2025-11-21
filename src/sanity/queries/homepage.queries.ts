@@ -9,6 +9,17 @@ import { defineQuery } from 'next-sanity'
 export const homePageQuery = defineQuery(`*[_type == "homePage"][0] {
   _id,
   title,
+  seo {
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    ogImage {alt, asset->},
+    ogTitle,
+    ogDescription,
+    canonicalUrl,
+    noIndex,
+    noFollow
+  },
   heroSection {
     title,
     vimeoUrl,

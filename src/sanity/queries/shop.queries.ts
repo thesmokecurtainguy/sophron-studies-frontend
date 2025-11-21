@@ -11,6 +11,17 @@ export const categoriesQuery = defineQuery(`*[_type == "category"] {
   title,
   slug,
   description,
+  seo {
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    ogImage {alt, asset->},
+    ogTitle,
+    ogDescription,
+    canonicalUrl,
+    noIndex,
+    noFollow
+  },
   "productCount": count(*[_type == "product" && isAvailable == true && !(_id in path("drafts.**")) && references(^._id)])
 } | order(title asc)`)
 
@@ -19,7 +30,7 @@ export const productsQuery = defineQuery(`*[_type == "product" && isAvailable ==
   _id,
   name,
   slug,
-  images[]{..., asset->},
+  images[]{alt, asset->},
   price,
   externalUrl,
   categories[]->{_id, title, slug},
@@ -35,13 +46,36 @@ export const productBySlugQuery = defineQuery(`*[
   _id,
   name,
   slug,
-  images[]{..., asset->},
+  images[]{alt, asset->},
   description,
   price,
   externalUrl,
   isAvailable,
   categories[]->{_id, title, slug},
   sizes,
+  seo {
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    ogImage {alt, asset->},
+    ogTitle,
+    ogDescription,
+    canonicalUrl,
+    noIndex,
+    noFollow
+  },
+  structuredData {
+    brand,
+    sku,
+    gtin,
+    mpn,
+    availability,
+    condition,
+    aggregateRating {
+      ratingValue,
+      reviewCount
+    }
+  },
   _createdAt
 }`)
 

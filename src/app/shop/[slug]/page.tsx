@@ -1,51 +1,24 @@
 import React from 'react';
-import { client, urlFor } from '@/sanity/client';
+import { fetchSanity, urlFor } from '@/sanity/client';
+import { productBySlugQuery } from '@/sanity/queries';
+import type { ProductBySlugQueryResult } from '@/sanity/types';
 import { PortableText } from '@portabletext/react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import AddToCartButton from '@/components/shop/AddToCartButton';
 import ProductViewTracker from '@/components/shop/ProductViewTracker';
-
-// Define Types (can potentially be shared in a types file later)
-interface SanityImageReference {
-  _type: 'image';
-  asset: {
-    _ref: string;
-    _type: 'reference';
-  };
-  alt?: string;
-}
-
-interface ProductDetail {
-  _id: string;
-  name: string;
-  slug: { current: string };
-  images: SanityImageReference[];
-  description: any[]; // blockContent type
-  price?: number; // Optional for external products
-  externalUrl?: string; // For external products
-  isAvailable: boolean;
-  sizes?: string[];
-}
-
-// Query to fetch a single product by its slug
-const PRODUCT_QUERY = `*[_type == "product" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
-  _id,
-  name,
-  slug,
-  images[]{..., asset->}, // Fetch image details and asset data
-  description,
-  price,
-  externalUrl,
-  isAvailable,
-  sizes
-}`;
+import { generateMetadata as generateSEOMetadata, generateProductStructuredData, getImageAlt } from '@/lib/seo';
+import type { Metadata } from 'next';
 
 // Function to fetch product data
-async function getProduct(slug: string): Promise<ProductDetail | null> {
+async function getProduct(slug: string) {
   try {
-    const product = await client.fetch<ProductDetail | null>(PRODUCT_QUERY, { slug }, { next: { revalidate: 120 } });
+    const product = await fetchSanity<ProductBySlugQueryResult>(
+      productBySlugQuery,
+      { slug },
+      { revalidate: 120, tags: ['products', `product-${slug}`] }
+    );
     return product;
   } catch (error) {
     console.error(`Error fetching product with slug ${slug}:`, error);
@@ -69,6 +42,32 @@ interface SearchParamsType {
   from_category?: string;
   from_page?: string;
   from_search?: string;
+}
+
+export async function generateMetadata({ params }: { params: Promise<SlugParams> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  
+  if (!product || !product.isAvailable) {
+    return {
+      title: 'Product Not Found - Sophron Studies',
+      description: 'The requested product could not be found.',
+    };
+  }
+
+  const fallbackImage = product.images?.[0]?.asset;
+  const description = product.description 
+    ? (typeof product.description === 'string' 
+        ? product.description 
+        : 'Product details available')
+    : `Shop ${product.name} at Sophron Studies`;
+  
+  return generateSEOMetadata(
+    product.seo || null,
+    `${product.name || 'Product'} - Sophron Studies`,
+    description,
+    fallbackImage
+  );
 }
 
 export default async function ProductDetailPage({ 
@@ -140,8 +139,31 @@ export default async function ProductDetailPage({
     return '← Back to Studies';
   };
 
+  // Generate structured data for product
+  const productUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/shop/${product.slug?.current || slug}`;
+  const productImage = product.images?.[0]?.asset 
+    ? urlFor(product.images[0].asset).width(800).url() 
+    : undefined;
+  
+  const structuredData = generateProductStructuredData({
+    name: product.name || 'Product',
+    description: Array.isArray(product.description)
+      ? 'Product details available'
+      : 'Product details available',
+    price: product.price ?? undefined,
+    image: productImage,
+    url: productUrl,
+    structuredData: product.structuredData || undefined,
+  });
+
   return (
     <div className="container mx-auto px-4 pb-8 pt-4 relative max-w-7xl">
+      {/* Structured Data JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
       {/* Track product view */}
       <ProductViewTracker
         productId={product._id}
@@ -153,14 +175,14 @@ export default async function ProductDetailPage({
         {/* Image Section */}
         <div>
           {/* Simple image display for now, could be a gallery later */}
-          {product.images?.[0] ? (
+          {product.images?.[0]?.asset ? (
             <div className="relative w-full aspect-3/4 bg-transparent flex items-center justify-center">
               <Image
-                src={urlFor(product.images[0]).fit('max').url()}
-                alt={product.images[0].alt || product.name}
+                src={urlFor(product.images[0].asset).fit('max').url()}
+                alt={getImageAlt(product.images[0], product.name)}
                 width={500}
                 height={800}
-                objectFit="contain"
+                style={{ objectFit: 'contain' }}
                 priority // Prioritize loading the main product image
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="shadow-md"
@@ -193,26 +215,10 @@ export default async function ProductDetailPage({
 
           <div className="prose prose-lg max-w-none">
              {/* Use PortableText to render the description */}
-            <PortableText value={product.description} />
+            {product.description && <PortableText value={product.description} />}
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-// Optional: Metadata generation
-// export async function generateMetadata({ params }: { params: Promise<SlugParams> }) {
-//   const { slug } = await params;
-//   const product = await getProduct(slug);
-//   if (!product) {
-//     return { title: 'Product Not Found' };
-//   }
-//   return {
-//     title: `${product.name} - Sophron Studies`,
-//     description: `Details about the study: ${product.name}`, // Simple description, can be improved
-//     // openGraph: {
-//     //   images: product.images?.[0] ? [urlFor(product.images[0]).url()] : [],
-//     // },
-//   };
-// } 
+} 

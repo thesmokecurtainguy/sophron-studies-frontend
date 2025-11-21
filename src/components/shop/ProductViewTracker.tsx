@@ -5,8 +5,8 @@ import { trackProductView } from '@/lib/analytics';
 
 interface ProductViewTrackerProps {
   productId: string;
-  productName: string;
-  productPrice?: number;
+  productName: string | null | undefined;
+  productPrice?: number | null;
 }
 
 /**
@@ -20,7 +20,7 @@ export default function ProductViewTracker({
 }: ProductViewTrackerProps) {
   useEffect(() => {
     // Track product view when component mounts
-    trackProductView(productId, productName, productPrice);
+    trackProductView(productId, productName || 'Product', productPrice ?? undefined);
   }, [productId, productName, productPrice]);
 
   return null;

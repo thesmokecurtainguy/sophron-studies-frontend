@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 // Remove default fonts if not needed, or configure custom fonts later
 // import { Geist, Geist_Mono } from "next/font/google";
 import Layout from "@/components/scaffold/Layout"; // Import the new Layout component
@@ -25,7 +26,9 @@ export default function RootLayout({
       <body 
         className={`${fontInter.variable} ${fontLiterata.variable} ${fontNorthwell.variable} font-sans antialiased`}
       >
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <CartProvider>
           <Layout>{children}</Layout>
         </CartProvider>

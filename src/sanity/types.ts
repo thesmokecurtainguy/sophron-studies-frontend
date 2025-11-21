@@ -13,6 +13,21 @@
  */
 
 // Source: schema.json
+export type ImageWithAlt = {
+  _type: "imageWithAlt";
+  asset?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+  };
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  caption?: string;
+};
+
 export type BlockContent = Array<{
   children?: Array<{
     marks?: Array<string>;
@@ -41,6 +56,7 @@ export type Category = {
   title?: string;
   slug?: Slug;
   description?: string;
+  seo?: Seo;
 };
 
 export type Product = {
@@ -61,6 +77,7 @@ export type Product = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: string;
     _type: "image";
     _key: string;
   }>;
@@ -76,6 +93,22 @@ export type Product = {
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   sizes?: Array<string>;
+  seo?: Seo;
+  structuredData?: StructuredData;
+};
+
+export type StructuredData = {
+  _type: "structuredData";
+  brand?: string;
+  sku?: string;
+  gtin?: string;
+  mpn?: string;
+  availability?: "https://schema.org/InStock" | "https://schema.org/OutOfStock" | "https://schema.org/PreOrder" | "https://schema.org/LimitedAvailability";
+  condition?: "https://schema.org/NewCondition" | "https://schema.org/UsedCondition" | "https://schema.org/RefurbishedCondition";
+  aggregateRating?: {
+    ratingValue?: number;
+    reviewCount?: number;
+  };
 };
 
 export type BlogHero = {
@@ -128,6 +161,7 @@ export type Post = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: string;
     _type: "image";
   };
   author?: {
@@ -141,6 +175,7 @@ export type Post = {
   category?: string;
   tags?: Array<string>;
   featured?: boolean;
+  seo?: Seo;
 };
 
 export type Author = {
@@ -182,6 +217,7 @@ export type AboutPage = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: "newsletterSection";
   };
+  seo?: Seo;
 };
 
 export type AboutGallerySection = {
@@ -299,6 +335,32 @@ export type HomePage = {
     [internalGroqTypeReferenceTo]?: "newsletterSection";
   };
   testimonialsSection?: TestimonialsSection;
+  seo?: Seo;
+};
+
+export type Seo = {
+  _type: "seo";
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: Array<string>;
+  ogImage?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  ogTitle?: string;
+  ogDescription?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
 };
 
 export type TestimonialsSection = {
@@ -578,14 +640,49 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = BlockContent | Category | Product | BlogHero | Post | Author | AboutPage | AboutGallerySection | AboutBioSection | AboutHeroSection | HomePage | TestimonialsSection | NewsletterSection | UpcomingReleaseSection | FeaturedBlogPostSection | DefinitionSection | HeroSection | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = ImageWithAlt | BlockContent | Category | Product | StructuredData | BlogHero | Post | Author | AboutPage | AboutGallerySection | AboutBioSection | AboutHeroSection | HomePage | Seo | TestimonialsSection | NewsletterSection | UpcomingReleaseSection | FeaturedBlogPostSection | DefinitionSection | HeroSection | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ../sophron-studies-frontend/src/sanity/queries/aboutpage.queries.ts
+// Source: ../sophron-studies-frontend-main/src/sanity/queries/aboutpage.queries.ts
 // Variable: aboutPageQuery
-// Query: *[_type == "aboutPage"][0] {  _id,  title,  aboutHeroSection {    name,    backgroundImage,    rightImage,    leftImage  },  aboutBioSection {    heading,    body  },  aboutGallerySection {    images[]  },  newsletterSection-> {    title,    subtitle,    placeholderText,    buttonText  }}
+// Query: *[_type == "aboutPage"][0] {  _id,  title,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  },  aboutHeroSection {    name,    backgroundImage,    rightImage,    leftImage  },  aboutBioSection {    heading,    body  },  aboutGallerySection {    images[]  },  newsletterSection-> {    title,    subtitle,    placeholderText,    buttonText  }}
 export type AboutPageQueryResult = {
   _id: string;
   title: string | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
   aboutHeroSection: {
     name: string | null;
     backgroundImage: {
@@ -670,9 +767,9 @@ export type AboutPageQueryResult = {
   } | null;
 } | null;
 
-// Source: ../sophron-studies-frontend/src/sanity/queries/blog.queries.ts
+// Source: ../sophron-studies-frontend-main/src/sanity/queries/blog.queries.ts
 // Variable: allBlogPostsQuery
-// Query: *[  _type == "post"  && defined(slug.current)]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && defined(slug.current)]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type AllBlogPostsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -697,16 +794,29 @@ export type AllBlogPostsQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -728,9 +838,44 @@ export type AllBlogPostsQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: featuredBlogPostsQuery
-// Query: *[  _type == "post"  && defined(slug.current)  && featured == true]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && defined(slug.current)  && featured == true]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type FeaturedBlogPostsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -755,16 +900,29 @@ export type FeaturedBlogPostsQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -786,9 +944,44 @@ export type FeaturedBlogPostsQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: blogPostBySlugQuery
-// Query: *[  _type == "post"  && slug.current == $slug][0]{    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && slug.current == $slug][0]{    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type BlogPostBySlugQueryResult = {
   _id: string;
   title: string | null;
@@ -813,16 +1006,29 @@ export type BlogPostBySlugQueryResult = {
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -844,9 +1050,44 @@ export type BlogPostBySlugQueryResult = {
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 } | null;
 // Variable: relatedPostsQuery
-// Query: *[  _type == "post"  && slug.current != $slug  && (category == $category || count((tags)[@ in $tags]) > 0)]|order(publishedAt desc)[0...3]{    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && slug.current != $slug  && (category == $category || count((tags)[@ in $tags]) > 0)]|order(publishedAt desc)[0...3]{    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type RelatedPostsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -871,16 +1112,29 @@ export type RelatedPostsQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -902,9 +1156,44 @@ export type RelatedPostsQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: recentPostsQuery
-// Query: *[  _type == "post"  && slug.current != $slug  && !(_id in $existingIds)]|order(publishedAt desc)[0...3]{    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && slug.current != $slug  && !(_id in $existingIds)]|order(publishedAt desc)[0...3]{    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type RecentPostsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -929,16 +1218,29 @@ export type RecentPostsQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -960,9 +1262,44 @@ export type RecentPostsQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: blogPostsByCategoryQuery
-// Query: *[  _type == "post"  && defined(slug.current)  && category == $category]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && defined(slug.current)  && category == $category]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type BlogPostsByCategoryQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -987,16 +1324,29 @@ export type BlogPostsByCategoryQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -1018,9 +1368,44 @@ export type BlogPostsByCategoryQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: blogPostsByTagQuery
-// Query: *[  _type == "post"  && defined(slug.current)  && $tagName in tags]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && defined(slug.current)  && $tagName in tags]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type BlogPostsByTagQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -1045,16 +1430,29 @@ export type BlogPostsByTagQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -1076,9 +1474,44 @@ export type BlogPostsByTagQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: searchBlogPostsQuery
-// Query: *[  _type == "post"  && defined(slug.current)  && (    title match $searchPattern ||    excerpt match $searchPattern ||    content match $searchPattern ||    category match $searchPattern  )]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage,  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured}
+// Query: *[  _type == "post"  && defined(slug.current)  && (    title match $searchPattern ||    excerpt match $searchPattern ||    content match $searchPattern ||    category match $searchPattern  )]|order(publishedAt desc){    _id,  title,  excerpt,  content,  "slug": slug.current,  coverImage {alt, asset->},  "author": {    "name": author->name,    "avatar": author->avatar  },  publishedAt,  readingTime,  category,  tags,  featured,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  }}
 export type SearchBlogPostsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -1103,16 +1536,29 @@ export type SearchBlogPostsQueryResult = Array<{
   }> | null;
   slug: string | null;
   coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
   } | null;
   author: {
     name: string | null;
@@ -1134,6 +1580,41 @@ export type SearchBlogPostsQueryResult = Array<{
   category: string | null;
   tags: Array<string> | null;
   featured: boolean | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
 }>;
 // Variable: allCategoriesQuery
 // Query: array::unique(*[  _type == "post"   && defined(category)].category)
@@ -1153,12 +1634,47 @@ export type BlogHeroQueryResult = {
 // Query: *[  _type == "post"  && defined(slug.current)].slug.current
 export type AllPostSlugsQueryResult = Array<string | null>;
 
-// Source: ../sophron-studies-frontend/src/sanity/queries/homepage.queries.ts
+// Source: ../sophron-studies-frontend-main/src/sanity/queries/homepage.queries.ts
 // Variable: homePageQuery
-// Query: *[_type == "homePage"][0] {  _id,  title,  heroSection {    title,    vimeoUrl,    backgroundImage {..., asset->}  },  definitionSection {    titlePart1,    titlePart2,    definitionText,    importantPointTitle,    importantPointText,    image1 {alt, asset->},    image2 {alt, asset->}  },  featuredBlogPostSection {    titlePart1,    titlePart2,    buttonText,    image1 {alt, asset->},    image2 {alt, asset->},    featuredPost-> {      _id,      title,      slug { current },      excerpt,      coverImage {alt, asset->}    }  },  upcomingReleaseSection {    showNewRelease,    newRelease-> {      status,      backgroundTheme,      titlePart1,      titlePart2,      text,      buttonText,      buttonLink,      image1 {alt, asset->},      image2 {alt, asset->}    },    showComingSoon,    comingSoon-> {      status,      backgroundTheme,      titlePart1,      titlePart2,      text,      buttonText,      buttonLink,      image1 {alt, asset->},      image2 {alt, asset->}    }  },  newsletterSection-> {    title,    subtitle,    placeholderText,    buttonText  },  testimonialsSection {    title,    subtitle,    testimonials[] {      text,      citation    }  }}
+// Query: *[_type == "homePage"][0] {  _id,  title,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  },  heroSection {    title,    vimeoUrl,    backgroundImage {..., asset->}  },  definitionSection {    titlePart1,    titlePart2,    definitionText,    importantPointTitle,    importantPointText,    image1 {alt, asset->},    image2 {alt, asset->}  },  featuredBlogPostSection {    titlePart1,    titlePart2,    buttonText,    image1 {alt, asset->},    image2 {alt, asset->},    featuredPost-> {      _id,      title,      slug { current },      excerpt,      coverImage {alt, asset->}    }  },  upcomingReleaseSection {    showNewRelease,    newRelease-> {      status,      backgroundTheme,      titlePart1,      titlePart2,      text,      buttonText,      buttonLink,      image1 {alt, asset->},      image2 {alt, asset->}    },    showComingSoon,    comingSoon-> {      status,      backgroundTheme,      titlePart1,      titlePart2,      text,      buttonText,      buttonLink,      image1 {alt, asset->},      image2 {alt, asset->}    }  },  newsletterSection-> {    title,    subtitle,    placeholderText,    buttonText  },  testimonialsSection {    title,    subtitle,    testimonials[] {      text,      citation    }  }}
 export type HomePageQueryResult = {
   _id: string;
   title: string | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
   heroSection: {
     title: null;
     vimeoUrl: string | null;
@@ -1311,7 +1827,7 @@ export type HomePageQueryResult = {
       } | null;
       excerpt: string | null;
       coverImage: {
-        alt: null;
+        alt: string | null;
         asset: {
           _id: string;
           _type: "sanity.imageAsset";
@@ -1487,7 +2003,7 @@ export type TestimonialsQueryResult = {
   } | null;
 } | null;
 
-// Source: ../sophron-studies-frontend/src/sanity/queries/newsletter.queries.ts
+// Source: ../sophron-studies-frontend-main/src/sanity/queries/newsletter.queries.ts
 // Variable: newsletterSectionQuery
 // Query: *[_type == "newsletterSection"][0] {  title,  subtitle,  placeholderText,  buttonText}
 export type NewsletterSectionQueryResult = {
@@ -1497,23 +2013,59 @@ export type NewsletterSectionQueryResult = {
   buttonText: string | null;
 } | null;
 
-// Source: ../sophron-studies-frontend/src/sanity/queries/shop.queries.ts
+// Source: ../sophron-studies-frontend-main/src/sanity/queries/shop.queries.ts
 // Variable: categoriesQuery
-// Query: *[_type == "category"] {  _id,  title,  slug,  description,  "productCount": count(*[_type == "product" && isAvailable == true && !(_id in path("drafts.**")) && references(^._id)])} | order(title asc)
+// Query: *[_type == "category"] {  _id,  title,  slug,  description,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  },  "productCount": count(*[_type == "product" && isAvailable == true && !(_id in path("drafts.**")) && references(^._id)])} | order(title asc)
 export type CategoriesQueryResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
   description: string | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
   productCount: number;
 }>;
 // Variable: productsQuery
-// Query: *[_type == "product" && isAvailable == true && !(_id in path("drafts.**"))] | order(_createdAt desc) {  _id,  name,  slug,  images[]{..., asset->},  price,  externalUrl,  categories[]->{_id, title, slug},  sizes,  _createdAt}
+// Query: *[_type == "product" && isAvailable == true && !(_id in path("drafts.**"))] | order(_createdAt desc) {  _id,  name,  slug,  images[]{alt, asset->},  price,  externalUrl,  categories[]->{_id, title, slug},  sizes,  _createdAt}
 export type ProductsQueryResult = Array<{
   _id: string;
   name: string | null;
   slug: Slug | null;
   images: Array<{
+    alt: string | null;
     asset: {
       _id: string;
       _type: "sanity.imageAsset";
@@ -1536,11 +2088,6 @@ export type ProductsQueryResult = Array<{
       metadata?: SanityImageMetadata;
       source?: SanityAssetSourceData;
     } | null;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-    _key: string;
   }> | null;
   price: number | null;
   externalUrl: string | null;
@@ -1553,12 +2100,13 @@ export type ProductsQueryResult = Array<{
   _createdAt: string;
 }>;
 // Variable: productBySlugQuery
-// Query: *[  _type == "product"  && slug.current == $slug][0]{  _id,  name,  slug,  images[]{..., asset->},  description,  price,  externalUrl,  isAvailable,  categories[]->{_id, title, slug},  sizes,  _createdAt}
+// Query: *[  _type == "product"  && slug.current == $slug][0]{  _id,  name,  slug,  images[]{alt, asset->},  description,  price,  externalUrl,  isAvailable,  categories[]->{_id, title, slug},  sizes,  seo {    metaTitle,    metaDescription,    metaKeywords,    ogImage {alt, asset->},    ogTitle,    ogDescription,    canonicalUrl,    noIndex,    noFollow  },  structuredData {    brand,    sku,    gtin,    mpn,    availability,    condition,    aggregateRating {      ratingValue,      reviewCount    }  },  _createdAt}
 export type ProductBySlugQueryResult = {
   _id: string;
   name: string | null;
   slug: Slug | null;
   images: Array<{
+    alt: string | null;
     asset: {
       _id: string;
       _type: "sanity.imageAsset";
@@ -1581,11 +2129,6 @@ export type ProductBySlugQueryResult = {
       metadata?: SanityImageMetadata;
       source?: SanityAssetSourceData;
     } | null;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-    _key: string;
   }> | null;
   description: BlockContent | null;
   price: number | null;
@@ -1597,13 +2140,60 @@ export type ProductBySlugQueryResult = {
     slug: Slug | null;
   }> | null;
   sizes: Array<string> | null;
+  seo: {
+    metaTitle: string | null;
+    metaDescription: string | null;
+    metaKeywords: Array<string> | null;
+    ogImage: {
+      alt: string | null;
+      asset: {
+        _id: string;
+        _type: "sanity.imageAsset";
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        originalFilename?: string;
+        label?: string;
+        title?: string;
+        description?: string;
+        altText?: string;
+        sha1hash?: string;
+        extension?: string;
+        mimeType?: string;
+        size?: number;
+        assetId?: string;
+        uploadId?: string;
+        path?: string;
+        url?: string;
+        metadata?: SanityImageMetadata;
+        source?: SanityAssetSourceData;
+      } | null;
+    } | null;
+    ogTitle: string | null;
+    ogDescription: string | null;
+    canonicalUrl: string | null;
+    noIndex: boolean | null;
+    noFollow: boolean | null;
+  } | null;
+  structuredData: {
+    brand: string | null;
+    sku: string | null;
+    gtin: string | null;
+    mpn: string | null;
+    availability: "https://schema.org/InStock" | "https://schema.org/LimitedAvailability" | "https://schema.org/OutOfStock" | "https://schema.org/PreOrder" | null;
+    condition: "https://schema.org/NewCondition" | "https://schema.org/RefurbishedCondition" | "https://schema.org/UsedCondition" | null;
+    aggregateRating: {
+      ratingValue: number | null;
+      reviewCount: number | null;
+    } | null;
+  } | null;
   _createdAt: string;
 } | null;
 // Variable: allProductSlugsQuery
 // Query: *[  _type == "product"  && defined(slug.current)  && isAvailable == true].slug.current
 export type AllProductSlugsQueryResult = Array<string | null>;
 
-// Source: ../sophron-studies-frontend/src/sanity/queries/upcomingrelease.queries.ts
+// Source: ../sophron-studies-frontend-main/src/sanity/queries/upcomingrelease.queries.ts
 // Variable: latestUpcomingReleaseQuery
 // Query: *[_type == "upcomingReleaseSection"] | order(_createdAt desc)[0] {  _id,  status,  backgroundTheme,  titlePart1,  titlePart2,  text,  buttonText,  buttonLink,  image1 {asset->, alt},  image2 {asset->, alt}}
 export type LatestUpcomingReleaseQueryResult = {
@@ -1862,25 +2452,25 @@ export type UpcomingReleaseByIdQueryResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"aboutPage\"][0] {\n  _id,\n  title,\n  aboutHeroSection {\n    name,\n    backgroundImage,\n    rightImage,\n    leftImage\n  },\n  aboutBioSection {\n    heading,\n    body\n  },\n  aboutGallerySection {\n    images[]\n  },\n  newsletterSection-> {\n    title,\n    subtitle,\n    placeholderText,\n    buttonText\n  }\n}": AboutPageQueryResult;
-    "*[\n  _type == \"post\"\n  && defined(slug.current)\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": AllBlogPostsQueryResult;
-    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && featured == true\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": FeaturedBlogPostsQueryResult;
-    "*[\n  _type == \"post\"\n  && slug.current == $slug\n][0]{\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": BlogPostBySlugQueryResult;
-    "*[\n  _type == \"post\"\n  && slug.current != $slug\n  && (category == $category || count((tags)[@ in $tags]) > 0)\n]|order(publishedAt desc)[0...3]{\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": RelatedPostsQueryResult;
-    "*[\n  _type == \"post\"\n  && slug.current != $slug\n  && !(_id in $existingIds)\n]|order(publishedAt desc)[0...3]{\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": RecentPostsQueryResult;
-    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && category == $category\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": BlogPostsByCategoryQueryResult;
-    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && $tagName in tags\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": BlogPostsByTagQueryResult;
-    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && (\n    title match $searchPattern ||\n    excerpt match $searchPattern ||\n    content match $searchPattern ||\n    category match $searchPattern\n  )\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage,\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured\n\n}": SearchBlogPostsQueryResult;
+    "*[_type == \"aboutPage\"][0] {\n  _id,\n  title,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  },\n  aboutHeroSection {\n    name,\n    backgroundImage,\n    rightImage,\n    leftImage\n  },\n  aboutBioSection {\n    heading,\n    body\n  },\n  aboutGallerySection {\n    images[]\n  },\n  newsletterSection-> {\n    title,\n    subtitle,\n    placeholderText,\n    buttonText\n  }\n}": AboutPageQueryResult;
+    "*[\n  _type == \"post\"\n  && defined(slug.current)\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": AllBlogPostsQueryResult;
+    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && featured == true\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": FeaturedBlogPostsQueryResult;
+    "*[\n  _type == \"post\"\n  && slug.current == $slug\n][0]{\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": BlogPostBySlugQueryResult;
+    "*[\n  _type == \"post\"\n  && slug.current != $slug\n  && (category == $category || count((tags)[@ in $tags]) > 0)\n]|order(publishedAt desc)[0...3]{\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": RelatedPostsQueryResult;
+    "*[\n  _type == \"post\"\n  && slug.current != $slug\n  && !(_id in $existingIds)\n]|order(publishedAt desc)[0...3]{\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": RecentPostsQueryResult;
+    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && category == $category\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": BlogPostsByCategoryQueryResult;
+    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && $tagName in tags\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": BlogPostsByTagQueryResult;
+    "*[\n  _type == \"post\"\n  && defined(slug.current)\n  && (\n    title match $searchPattern ||\n    excerpt match $searchPattern ||\n    content match $searchPattern ||\n    category match $searchPattern\n  )\n]|order(publishedAt desc){\n  \n  _id,\n  title,\n  excerpt,\n  content,\n  \"slug\": slug.current,\n  coverImage {alt, asset->},\n  \"author\": {\n    \"name\": author->name,\n    \"avatar\": author->avatar\n  },\n  publishedAt,\n  readingTime,\n  category,\n  tags,\n  featured,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  }\n\n}": SearchBlogPostsQueryResult;
     "array::unique(*[\n  _type == \"post\" \n  && defined(category)\n].category)": AllCategoriesQueryResult;
     "array::unique(*[\n  _type == \"post\" \n  && defined(tags)\n].tags[])": AllTagsQueryResult;
     "*[_type == \"blogHero\"][0]{\n  title,\n  description,\n  announcement,\n  announcementLink\n}": BlogHeroQueryResult;
     "*[\n  _type == \"post\"\n  && defined(slug.current)\n].slug.current": AllPostSlugsQueryResult;
-    "*[_type == \"homePage\"][0] {\n  _id,\n  title,\n  heroSection {\n    title,\n    vimeoUrl,\n    backgroundImage {..., asset->}\n  },\n  definitionSection {\n    titlePart1,\n    titlePart2,\n    definitionText,\n    importantPointTitle,\n    importantPointText,\n    image1 {alt, asset->},\n    image2 {alt, asset->}\n  },\n  featuredBlogPostSection {\n    titlePart1,\n    titlePart2,\n    buttonText,\n    image1 {alt, asset->},\n    image2 {alt, asset->},\n    featuredPost-> {\n      _id,\n      title,\n      slug { current },\n      excerpt,\n      coverImage {alt, asset->}\n    }\n  },\n  upcomingReleaseSection {\n    showNewRelease,\n    newRelease-> {\n      status,\n      backgroundTheme,\n      titlePart1,\n      titlePart2,\n      text,\n      buttonText,\n      buttonLink,\n      image1 {alt, asset->},\n      image2 {alt, asset->}\n    },\n    showComingSoon,\n    comingSoon-> {\n      status,\n      backgroundTheme,\n      titlePart1,\n      titlePart2,\n      text,\n      buttonText,\n      buttonLink,\n      image1 {alt, asset->},\n      image2 {alt, asset->}\n    }\n  },\n  newsletterSection-> {\n    title,\n    subtitle,\n    placeholderText,\n    buttonText\n  },\n  testimonialsSection {\n    title,\n    subtitle,\n    testimonials[] {\n      text,\n      citation\n    }\n  }\n}": HomePageQueryResult;
+    "*[_type == \"homePage\"][0] {\n  _id,\n  title,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  },\n  heroSection {\n    title,\n    vimeoUrl,\n    backgroundImage {..., asset->}\n  },\n  definitionSection {\n    titlePart1,\n    titlePart2,\n    definitionText,\n    importantPointTitle,\n    importantPointText,\n    image1 {alt, asset->},\n    image2 {alt, asset->}\n  },\n  featuredBlogPostSection {\n    titlePart1,\n    titlePart2,\n    buttonText,\n    image1 {alt, asset->},\n    image2 {alt, asset->},\n    featuredPost-> {\n      _id,\n      title,\n      slug { current },\n      excerpt,\n      coverImage {alt, asset->}\n    }\n  },\n  upcomingReleaseSection {\n    showNewRelease,\n    newRelease-> {\n      status,\n      backgroundTheme,\n      titlePart1,\n      titlePart2,\n      text,\n      buttonText,\n      buttonLink,\n      image1 {alt, asset->},\n      image2 {alt, asset->}\n    },\n    showComingSoon,\n    comingSoon-> {\n      status,\n      backgroundTheme,\n      titlePart1,\n      titlePart2,\n      text,\n      buttonText,\n      buttonLink,\n      image1 {alt, asset->},\n      image2 {alt, asset->}\n    }\n  },\n  newsletterSection-> {\n    title,\n    subtitle,\n    placeholderText,\n    buttonText\n  },\n  testimonialsSection {\n    title,\n    subtitle,\n    testimonials[] {\n      text,\n      citation\n    }\n  }\n}": HomePageQueryResult;
     "*[_type == \"homePage\"][0] {\n  testimonialsSection {\n    title,\n    subtitle,\n    testimonials[] {\n      text,\n      citation\n    }\n  }\n}": TestimonialsQueryResult;
     "*[_type == \"newsletterSection\"][0] {\n  title,\n  subtitle,\n  placeholderText,\n  buttonText\n}": NewsletterSectionQueryResult;
-    "*[_type == \"category\"] {\n  _id,\n  title,\n  slug,\n  description,\n  \"productCount\": count(*[_type == \"product\" && isAvailable == true && !(_id in path(\"drafts.**\")) && references(^._id)])\n} | order(title asc)": CategoriesQueryResult;
-    "*[_type == \"product\" && isAvailable == true && !(_id in path(\"drafts.**\"))] | order(_createdAt desc) {\n  _id,\n  name,\n  slug,\n  images[]{..., asset->},\n  price,\n  externalUrl,\n  categories[]->{_id, title, slug},\n  sizes,\n  _createdAt\n}": ProductsQueryResult;
-    "*[\n  _type == \"product\"\n  && slug.current == $slug\n][0]{\n  _id,\n  name,\n  slug,\n  images[]{..., asset->},\n  description,\n  price,\n  externalUrl,\n  isAvailable,\n  categories[]->{_id, title, slug},\n  sizes,\n  _createdAt\n}": ProductBySlugQueryResult;
+    "*[_type == \"category\"] {\n  _id,\n  title,\n  slug,\n  description,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  },\n  \"productCount\": count(*[_type == \"product\" && isAvailable == true && !(_id in path(\"drafts.**\")) && references(^._id)])\n} | order(title asc)": CategoriesQueryResult;
+    "*[_type == \"product\" && isAvailable == true && !(_id in path(\"drafts.**\"))] | order(_createdAt desc) {\n  _id,\n  name,\n  slug,\n  images[]{alt, asset->},\n  price,\n  externalUrl,\n  categories[]->{_id, title, slug},\n  sizes,\n  _createdAt\n}": ProductsQueryResult;
+    "*[\n  _type == \"product\"\n  && slug.current == $slug\n][0]{\n  _id,\n  name,\n  slug,\n  images[]{alt, asset->},\n  description,\n  price,\n  externalUrl,\n  isAvailable,\n  categories[]->{_id, title, slug},\n  sizes,\n  seo {\n    metaTitle,\n    metaDescription,\n    metaKeywords,\n    ogImage {alt, asset->},\n    ogTitle,\n    ogDescription,\n    canonicalUrl,\n    noIndex,\n    noFollow\n  },\n  structuredData {\n    brand,\n    sku,\n    gtin,\n    mpn,\n    availability,\n    condition,\n    aggregateRating {\n      ratingValue,\n      reviewCount\n    }\n  },\n  _createdAt\n}": ProductBySlugQueryResult;
     "*[\n  _type == \"product\"\n  && defined(slug.current)\n  && isAvailable == true\n].slug.current": AllProductSlugsQueryResult;
     "*[_type == \"upcomingReleaseSection\"] | order(_createdAt desc)[0] {\n  _id,\n  status,\n  backgroundTheme,\n  titlePart1,\n  titlePart2,\n  text,\n  buttonText,\n  buttonLink,\n  image1 {asset->, alt},\n  image2 {asset->, alt}\n}": LatestUpcomingReleaseQueryResult;
     "*[_type == \"homePage\"][0].upcomingReleaseSection.reference-> {\n  _id,\n  status,\n  backgroundTheme,\n  titlePart1,\n  titlePart2,\n  text,\n  buttonText,\n  buttonLink,\n  image1 {asset->, alt},\n  image2 {asset->, alt}\n}": ActiveUpcomingReleaseQueryResult;

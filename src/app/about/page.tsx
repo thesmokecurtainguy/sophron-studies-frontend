@@ -5,6 +5,8 @@ import AboutHero from '@/components/about/AboutHero';
 import AboutBio from '@/components/about/AboutBio';
 import AboutGallery from '@/components/about/AboutGallery';
 import NewsletterSection from '@/components/sections/NewsletterSection';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
 
 // Using generated types from @/sanity/types instead of manual interface
 
@@ -35,6 +37,26 @@ async function getAboutPageData(): Promise<AboutPageQueryResult | null> {
     console.error('❌ Error fetching About page data:', error);
     return null;
   }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await getAboutPageData();
+  
+  if (!data) {
+    return {
+      title: 'About - Sophron Studies',
+      description: 'Learn more about Sophron Studies.',
+    };
+  }
+
+  const fallbackImage = data.aboutHeroSection?.backgroundImage?.asset;
+  
+  return generateSEOMetadata(
+    data.seo || null,
+    data.title || 'About - Sophron Studies',
+    'Learn more about Sophron Studies.',
+    fallbackImage
+  );
 }
 
 export default async function AboutPage() {

@@ -9,6 +9,17 @@ import { defineQuery } from 'next-sanity'
 export const aboutPageQuery = defineQuery(`*[_type == "aboutPage"][0] {
   _id,
   title,
+  seo {
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    ogImage {alt, asset->},
+    ogTitle,
+    ogDescription,
+    canonicalUrl,
+    noIndex,
+    noFollow
+  },
   aboutHeroSection {
     name,
     backgroundImage,

@@ -73,8 +73,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       name: product.name,
       price: product.price!,
       slug: product.slug.current,
-      image: product.images?.[0] 
-        ? urlFor(product.images[0]).width(400).height(533).fit('crop').url()
+      image: product.images?.[0]?.asset
+        ? urlFor(product.images[0].asset).width(400).height(533).fit('crop').url()
         : undefined,
     };
 
@@ -101,10 +101,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <Link href={createProductLink()} className="flex-1 flex flex-col">
         <div className="p-4 text-center flex-1 flex flex-col">
           <div className="relative w-full aspect-3/4 bg-gray-100 mb-4 overflow-hidden">
-            {product.images?.[0] ? (
+            {product.images?.[0]?.asset ? (
               <Image
-                src={urlFor(product.images[0]).width(400).height(533).fit('crop').url()}
-                alt={product.images[0].alt || product.name}
+                src={urlFor(product.images[0].asset).width(400).height(533).fit('crop').url()}
+                alt={product.images[0].alt || product.name || 'Product image'}
                 fill
                 style={{ objectFit: 'cover' }}
                 className="transition-transform duration-300 group-hover:scale-105"

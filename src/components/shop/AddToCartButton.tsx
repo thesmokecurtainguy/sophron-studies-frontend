@@ -5,30 +5,10 @@ import { useCart } from '@/lib/cart-context';
 import { urlFor } from '@/sanity/client';
 import { FiShoppingCart, FiExternalLink } from 'react-icons/fi';
 import { trackAddToCart, trackExternalLinkClick } from '@/lib/analytics';
-
-interface SanityImageReference {
-  _type: 'image';
-  asset: {
-    _ref: string;
-    _type: 'reference';
-  };
-  alt?: string;
-}
-
-interface ProductDetail {
-  _id: string;
-  name: string;
-  slug: { current: string };
-  images: SanityImageReference[];
-  description: any[];
-  price?: number; // Optional for external products
-  externalUrl?: string; // For external products
-  isAvailable: boolean;
-  sizes?: string[];
-}
+import type { ProductBySlugQueryResult } from '@/sanity/types';
 
 interface AddToCartButtonProps {
-  product: ProductDetail;
+  product: NonNullable<ProductBySlugQueryResult>;
 }
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product }) => {
@@ -46,11 +26,11 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product }) => {
 
     const cartItem = {
       _id: product._id,
-      name: product.name,
+      name: product.name || 'Product',
       price: product.price!,
-      slug: product.slug.current,
-      image: product.images?.[0] 
-        ? urlFor(product.images[0]).width(400).height(533).fit('crop').url()
+      slug: product.slug?.current || '',
+      image: product.images?.[0]?.asset
+        ? urlFor(product.images[0].asset).width(400).height(533).fit('crop').url()
         : undefined,
       size: selectedSize || undefined,
     };
@@ -59,13 +39,13 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product }) => {
     openCart();
     
     // Track add to cart event
-    trackAddToCart(product._id, product.name, product.price!, 1, selectedSize || undefined);
+    trackAddToCart(product._id, product.name || 'Product', product.price!, 1, selectedSize || undefined);
   };
 
   const handleVisitWebsite = () => {
     if (product.externalUrl) {
       // Track external link click
-      trackExternalLinkClick(product.externalUrl, product.name);
+      trackExternalLinkClick(product.externalUrl, product.name || 'Product');
       window.open(product.externalUrl, '_blank', 'noopener,noreferrer');
     }
   };

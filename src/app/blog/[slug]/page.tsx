@@ -5,6 +5,7 @@ import type { BlogPostBySlugQueryResult, RelatedPostsQueryResult, AllPostSlugsQu
 import BlogPostHeader from '@/components/blog/BlogPostHeader';
 import BlogPostContent from '@/components/blog/BlogPostContent';
 import RelatedPosts from '@/components/blog/RelatedPosts';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 
 async function getBlogPostData(slug: string) {
   const post = await fetchSanity<BlogPostBySlugQueryResult>(
@@ -24,10 +25,13 @@ async function getBlogPostData(slug: string) {
     title: post.title || '',
     excerpt: post.excerpt || '',
     content: post.content || [],
-    coverImage: post.coverImage ? urlFor(post.coverImage).width(800).url() : '',
+    coverImage: post.coverImage?.asset ? urlFor(post.coverImage.asset).width(800).url() : '',
+    coverImageAlt: post.coverImage?.alt || post.title || '',
     author: {
       name: post.author?.name || '',
-      avatar: post.author?.avatar ? urlFor(post.author.avatar).width(100).url() : ''
+      avatar: post.author?.avatar?.asset 
+        ? urlFor(post.author.avatar.asset).width(100).url()
+        : ''
     },
     date: post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('en-US', {
       month: 'long',
@@ -37,7 +41,8 @@ async function getBlogPostData(slug: string) {
     readingTime: post.readingTime || '5 min read',
     category: post.category || '',
     tags: post.tags || [],
-    featured: post.featured || false
+    featured: post.featured || false,
+    seo: post.seo || null
   };
 
   return transformedPost;
@@ -60,10 +65,12 @@ async function getRelatedPostsData(slug: string, post: any) {
     title: p.title || '',
     excerpt: p.excerpt || '',
     content: p.content || [],
-    coverImage: p.coverImage ? urlFor(p.coverImage).width(400).url() : '',
+    coverImage: p.coverImage?.asset ? urlFor(p.coverImage.asset).width(400).url() : '',
     author: {
       name: p.author?.name || '',
-      avatar: p.author?.avatar ? urlFor(p.author.avatar).width(100).url() : ''
+      avatar: p.author?.avatar?.asset 
+        ? urlFor(p.author.avatar.asset).width(100).url()
+        : ''
     },
     date: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('en-US', {
       month: 'long',
@@ -93,15 +100,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = await getBlogPostData(slug);
   
-  return {
-    title: `${post.title} | The Sophron Blog`,
-    description: post.excerpt,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      images: [post.coverImage],
-    },
-  };
+  const fallbackImage = post.coverImage?.asset;
+  
+  return generateSEOMetadata(
+    post.seo || null,
+    `${post.title} | The Sophron Blog`,
+    post.excerpt || '',
+    fallbackImage
+  );
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -1,6 +1,9 @@
 import ContactForm from "@/components/ContactForm";
 import React from 'react';
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-16 md:py-24">
