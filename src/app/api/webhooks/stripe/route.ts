@@ -2,13 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-04-30.basil',
-});
+// Only initialize if keys are present
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-08-27.basil',
+    })
+  : null;
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const resend = process.env.RESEND_API_KEY 
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export async function POST(request: NextRequest) {
+  // Check if Stripe is configured
+  if (!stripe || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.json(
+      { error: 'Stripe is not configured' }, 
+      { status: 503 }
+    );
+  }
+
   const body = await request.text();
   const signature = request.headers.get('stripe-signature');
 
@@ -96,14 +109,18 @@ ${items}
   `;
 
   try {
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
-      to: process.env.RESEND_TO_EMAIL || 'asher@asherpope.com',
-      subject: `New order ending in ${shortOrderId}`,
-      text: emailText,
-    });
-    
-    console.log('Order notification sent successfully');
+    // Only send email if Resend is configured
+    if (resend) {
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+        to: process.env.RESEND_TO_EMAIL || 'asher@asherpope.com',
+        subject: `New order ending in ${shortOrderId}`,
+        text: emailText,
+      });
+      console.log('Order notification sent successfully');
+    } else {
+      console.log('Resend not configured - skipping email notification');
+    }
   } catch (error) {
     console.error('Failed to send order notification:', error);
   }
