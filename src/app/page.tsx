@@ -83,9 +83,20 @@ export default async function Home() {
         <HeroSection
           vimeoUrl={data.heroSection.vimeoUrl || undefined}
           backgroundImage={data.heroSection.backgroundImage?.asset ? {
-            url: urlFor(data.heroSection.backgroundImage.asset).width(1920).url(),
+            url: urlFor(data.heroSection.backgroundImage.asset)
+              .width(1920)
+              .quality(80)
+              .auto('format')
+              .url(),
             alt: safeString(data.heroSection.backgroundImage.alt)
           } : undefined}
+          posterImageUrl={data.heroSection.backgroundImage?.asset && data.heroSection.vimeoUrl
+            ? urlFor(data.heroSection.backgroundImage.asset)
+                .width(1920)
+                .quality(80)
+                .auto('format')
+                .url()
+            : undefined}
           overlayOpacity={0.4}
         />
       )}

@@ -6,6 +6,7 @@ import Layout from "@/components/scaffold/Layout"; // Import the new Layout comp
 import { CartProvider } from "@/lib/cart-context"; // Import the CartProvider
 import { fontInter, fontLiterata, fontNorthwell } from "@/lib/fonts"; // Import local fonts
 import GoogleAnalytics from "@/components/GoogleAnalytics"; // Import Google Analytics component
+import HeadLinks from "@/components/scaffold/HeadLinks"; // Import HeadLinks for preconnect hints
 
 import "./globals.css";
 
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body 
         className={`${fontInter.variable} ${fontLiterata.variable} ${fontNorthwell.variable} font-sans antialiased`}
       >
+        <HeadLinks />
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>

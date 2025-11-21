@@ -7,12 +7,14 @@ interface HeroSectionProps {
     url: string;
     alt: string;
   };
+  posterImageUrl?: string; // Poster image URL for Vimeo iframe background
   overlayOpacity?: number; // 0-1, defaults to 0.3
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ 
   vimeoUrl, 
   backgroundImage, 
+  posterImageUrl,
   overlayOpacity = 0.3 
 }) => {
   // Extract Vimeo video ID from URL
@@ -27,7 +29,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     <section className="w-full min-h-[35vh] md:min-h-[50vh] lg:min-h-[65vh] flex items-center justify-center bg-olive relative overflow-hidden">
       {/* Background Video or Image */}
       {vimeoId ? (
-        <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <div 
+          className="absolute inset-0 w-full h-full overflow-hidden"
+          style={{
+            backgroundImage: posterImageUrl ? `url(${posterImageUrl})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
           <iframe
             src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&controls=0&background=1`}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
