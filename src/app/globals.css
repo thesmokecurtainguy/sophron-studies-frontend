@@ -6,12 +6,6 @@
   --font-heading1: var(--font-northwell), cursive;
   --font-heading2: var(--font-literata), serif;
 
-  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
-  --background-image-gradient-conic: conic-gradient(
-    from 180deg at 50% 50%,
-    var(--tw-gradient-stops)
-  );
-
   --color-gold: #daa520;
   --color-olive: #d1d3ca;
   --color-creme: #faf6e8;
@@ -51,10 +45,6 @@
   @apply font-heading2 text-4xl uppercase;
 }
 
-@utility heading-hero {
-  @apply font-heading1 text-7xl md:text-9xl;
-}
-
 @utility body-text {
   /* Body Text */
   @apply max-w-none text-lg;
@@ -89,14 +79,6 @@
   @apply btn bg-gray-800 text-white hover:bg-gray-700;
 }
 
-@utility btn-outline-light {
-  @apply inline-block px-6 py-3 border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white transition-colors;
-}
-
-@utility btn-outline-dark {
-  @apply inline-block px-6 py-3 border border-white text-white hover:bg-white hover:text-gray-900 transition-colors;
-}
-
 @utility btn-submit {
   @apply p-3 bg-gray-800 text-white hover:bg-gray-700 transition-colors; /* Specific for form submit */
 }
@@ -109,13 +91,6 @@
     --pink: #b9a5a5;
     --foreground: #171717;
   }
-
-  /* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
 
   body {
     @apply bg-background text-foreground;
