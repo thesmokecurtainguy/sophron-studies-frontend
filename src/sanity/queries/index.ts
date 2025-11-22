@@ -21,4 +21,7 @@ export * from './shop.queries'
 export * from './upcomingrelease.queries'
 
 // Newsletter queries
-export * from './newsletter.queries' 
+export * from './newsletter.queries'
+
+// FAQ queries
+export * from './faq.queries' 
