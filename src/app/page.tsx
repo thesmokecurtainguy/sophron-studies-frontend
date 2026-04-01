@@ -8,7 +8,10 @@ import FeaturedBlogPost from "@/components/sections/FeaturedBlogPost";
 import UpcomingRelease from "@/components/sections/UpcomingRelease";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import { PortableText } from "@portabletext/react";
-import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+import {
+  generateMetadata as generateSEOMetadata,
+  generateWebSiteAndOrganizationJsonLd,
+} from "@/lib/seo";
 import type { Metadata } from "next";
 
 // Using generated types from @/sanity/types instead of manual interface
@@ -77,10 +80,47 @@ export default async function Home() {
     }));
   };
 
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_BASE_URL || "https://sophronstudies.com"
+  ).replace(/\/$/, "");
+  const siteName = safeString(data.title) || "Sophron Studies";
+  const siteDescription =
+    safeString(data.seo?.metaDescription) ||
+    "Reformed Bible studies for women.";
+  const logoFromCms = data.seo?.ogImage?.asset
+    ? urlFor(data.seo.ogImage.asset).width(600).height(600).fit("max").url()
+    : data.heroSection?.backgroundImage?.asset
+      ? urlFor(data.heroSection.backgroundImage.asset)
+          .width(600)
+          .quality(80)
+          .auto("format")
+          .url()
+      : undefined;
+  const logoUrlAbsolute =
+    logoFromCms && logoFromCms.startsWith("http")
+      ? logoFromCms
+      : `${baseUrl}/images/logo-white.svg`;
+
+  const homeJsonLd = generateWebSiteAndOrganizationJsonLd({
+    baseUrl,
+    organizationName: siteName,
+    description: siteDescription,
+    logoUrl: logoUrlAbsolute,
+  });
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+      />
       {data.heroSection && (
         <HeroSection
+          headingText={
+            safeString(data.heroSection.title) ||
+            safeString(data.title) ||
+            'Sophron Studies — Reformed Bible studies for women'
+          }
           vimeoUrl={data.heroSection.vimeoUrl || undefined}
           backgroundImage={data.heroSection.backgroundImage?.asset ? {
             url: urlFor(data.heroSection.backgroundImage.asset)

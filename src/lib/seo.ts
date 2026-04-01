@@ -157,6 +157,56 @@ export function generateProductStructuredData(product: ProductData): object {
   return baseSchema
 }
 
+export interface WebSiteOrganizationJsonLdInput {
+  /** Canonical site origin, no trailing slash (e.g. https://sophronstudies.com) */
+  baseUrl: string
+  organizationName: string
+  description: string
+  /** Absolute URL for logo / brand image */
+  logoUrl?: string
+}
+
+/**
+ * WebSite + Organization JSON-LD for the home page (search / AI overview friendly).
+ */
+export function generateWebSiteAndOrganizationJsonLd(
+  input: WebSiteOrganizationJsonLdInput
+): Record<string, unknown> {
+  const base = input.baseUrl.replace(/\/$/, '')
+  const orgId = `${base}/#organization`
+  const webId = `${base}/#website`
+
+  const organization: Record<string, unknown> = {
+    '@type': 'Organization',
+    '@id': orgId,
+    name: input.organizationName,
+    description: input.description,
+    url: base,
+  }
+
+  if (input.logoUrl) {
+    organization.logo = {
+      '@type': 'ImageObject',
+      url: input.logoUrl,
+    }
+  }
+
+  const website: Record<string, unknown> = {
+    '@type': 'WebSite',
+    '@id': webId,
+    name: input.organizationName,
+    description: input.description,
+    url: base,
+    publisher: { '@id': orgId },
+    inLanguage: 'en-US',
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [organization, website],
+  }
+}
+
 /**
  * Get image alt text from Sanity image object
  */

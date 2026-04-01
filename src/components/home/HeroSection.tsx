@@ -1,7 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
+import HeroVimeoDeferred from '@/components/home/HeroVimeoDeferred';
 
 interface HeroSectionProps {
+  /** Used for a single accessible H1 (screen-reader or visible later from CMS) */
+  headingText?: string;
   vimeoUrl?: string;
   backgroundImage?: {
     url: string;
@@ -12,6 +15,7 @@ interface HeroSectionProps {
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ 
+  headingText,
   vimeoUrl, 
   backgroundImage, 
   posterImageUrl,
@@ -38,17 +42,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             backgroundRepeat: 'no-repeat',
           }}
         >
-          <iframe
-            src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&controls=0&background=1`}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            allow="autoplay; fullscreen"
-            style={{
-              pointerEvents: 'none',
-              width: 'max(100%, calc(100vh * 16/9))',
-              height: 'max(100%, calc(100vw * 9/16))',
-              minWidth: '100%',
-              minHeight: '100%',
-            }}
+          <HeroVimeoDeferred
+            vimeoId={vimeoId}
+            iframeTitle="Decorative background video for Sophron Studies"
           />
         </div>
       ) : backgroundImage ? (
@@ -70,6 +66,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       />
       
       <div className="relative z-20 text-center p-8 max-w-4xl mx-auto flex flex-col items-center">
+        {headingText ? (
+          <h1 className="sr-only">{headingText}</h1>
+        ) : null}
         {/* Logo - full size, max-w-4xl */}
         <div className="w-full max-w-4xl mb-8">
           <Image
