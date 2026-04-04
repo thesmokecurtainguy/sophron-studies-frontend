@@ -36,8 +36,12 @@ export default function SuccessPage() {
           Payment Successful!
         </h1>
         
-        <p className="text-gray-600 mb-8">
+        <p className="text-gray-600 mb-4">
           Thank you for your purchase. You will receive an email confirmation shortly.
+        </p>
+        
+        <p className="text-sm text-gray-500 bg-gray-50 rounded-lg p-3 mb-8">
+          🚚 Please allow 7–10 days for delivery. Your order will ship via USPS.
         </p>
         
         <div className="space-y-4">

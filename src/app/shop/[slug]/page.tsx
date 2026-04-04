@@ -213,6 +213,13 @@ export default async function ProductDetailPage({
           {/* Add to Cart Button */}
           <AddToCartButton product={product} />
 
+          {/* Shipping Notice */}
+          {!product.externalUrl && (
+            <p className="text-sm text-gray-500 mt-2 mb-4">
+              🚚 Please allow 7–10 days for delivery when ordering directly from our website.
+            </p>
+          )}
+
           <div className="prose prose-lg max-w-none">
              {/* Use PortableText to render the description */}
             {product.description && <PortableText value={product.description} />}

@@ -143,6 +143,11 @@ const CartSidebar: React.FC = () => {
               <span className="font-mono">${getTotalPrice().toFixed(2)}</span>
             </div>
 
+            {/* Shipping Notice */}
+            <p className="text-xs text-gray-500 text-center">
+              🚚 Please allow 7–10 days for delivery via USPS.
+            </p>
+
             {/* Action Buttons */}
             <div className="space-y-2">
               <button
