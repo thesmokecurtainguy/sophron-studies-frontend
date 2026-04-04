@@ -127,7 +127,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             headline: post.title,
             description: post.excerpt,
             image: post.coverImage,
-            datePublished: post.publishedAt || post.date,
+            datePublished: post.publishedAt ? new Date(post.publishedAt).toISOString() : post.date,
             author: {
               '@type': 'Person',
               name: post.author?.name || 'Melissa McPhail',
