@@ -38,6 +38,7 @@ async function getBlogPostData(slug: string) {
       day: 'numeric',
       year: 'numeric'
     }) : '',
+    publishedAt: post.publishedAt || '',
     readingTime: post.readingTime || '5 min read',
     category: post.category || '',
     tags: post.tags || [],
@@ -116,10 +117,41 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const relatedPosts = await getRelatedPostsData(slug, post);
   
   return (
-    <main className="min-h-screen">
-      <BlogPostHeader post={post} />
-      <BlogPostContent post={post} />
-      <RelatedPosts posts={relatedPosts} />
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.title,
+            description: post.excerpt,
+            image: post.coverImage,
+            datePublished: post.publishedAt || post.date,
+            author: {
+              '@type': 'Person',
+              name: post.author?.name || 'Melissa McPhail',
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'Sophron Studies',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://sophron-studies-frontend.vercel.app/images/logo-white.svg',
+              },
+            },
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://sophron-studies-frontend.vercel.app'}/blog/${post.slug}`,
+            },
+          }),
+        }}
+      />
+      <main className="min-h-screen">
+        <BlogPostHeader post={post} />
+        <BlogPostContent post={post} />
+        <RelatedPosts posts={relatedPosts} />
+      </main>
+    </>
   );
 } 
