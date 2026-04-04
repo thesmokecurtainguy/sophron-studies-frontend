@@ -114,3 +114,4 @@ All queries now include SEO fields:
 - Canonical URLs default to current page URL if not specified
 - Robots meta tags default to index/follow if not specified
 
+

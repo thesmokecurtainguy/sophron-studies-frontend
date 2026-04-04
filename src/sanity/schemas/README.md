@@ -126,3 +126,4 @@ After adding these schemas:
 2. Build FAQ components for the frontend
 3. Create FAQ pages/routes in Next.js
 
+

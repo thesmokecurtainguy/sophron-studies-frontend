@@ -10,3 +10,4 @@
 export { default as faqCategory } from './faqCategory'
 export { default as faq } from './faq'
 
+

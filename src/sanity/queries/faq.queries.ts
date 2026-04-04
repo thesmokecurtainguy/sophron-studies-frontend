@@ -140,3 +140,4 @@ export const allFaqCategorySlugsQuery = defineQuery(`*[
   && defined(slug.current)
 ].slug.current`)
 
+

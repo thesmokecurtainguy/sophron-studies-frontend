@@ -299,3 +299,4 @@ After setting up the schemas:
 
 **Ready to use!** Once you've added these schemas to your Sanity Studio and created test content, you can start building the frontend components to display FAQs on sophronstudies.com.
 
+
