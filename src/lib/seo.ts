@@ -179,7 +179,7 @@ export function generateWebSiteAndOrganizationJsonLd(
   const organization: Record<string, unknown> = {
     '@type': 'Organization',
     '@id': orgId,
-    name: input.organizationName,
+    name: 'Sophron Studies',
     description: input.description,
     url: base,
   }
@@ -194,7 +194,7 @@ export function generateWebSiteAndOrganizationJsonLd(
   const website: Record<string, unknown> = {
     '@type': 'WebSite',
     '@id': webId,
-    name: input.organizationName,
+    name: 'Sophron Studies',
     description: input.description,
     url: base,
     publisher: { '@id': orgId },
