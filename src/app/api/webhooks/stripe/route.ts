@@ -69,15 +69,7 @@ async function sendOrderNotification(session: Stripe.Checkout.Session) {
   const customerName = session.customer_details?.name;
   const totalAmount = session.amount_total! / 100;
   
-  // Use hardcoded test address for development, or real address in production
-  const shippingAddress = (session as any).shipping_details?.address || {
-    line1: "123 Test Street",
-    line2: "Apt 4B", 
-    city: "San Francisco",
-    state: "CA",
-    postal_code: "94102",
-    country: "US"
-  };
+  const shippingAddress = (session as any).shipping_details?.address;
   
   const orderDate = new Date(session.created * 1000); // Convert Unix timestamp to Date
   
