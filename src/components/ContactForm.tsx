@@ -31,23 +31,35 @@ const ContactForm: React.FC = () => {
     e.preventDefault();
     setStatus('Submitting...');
 
-    const form = e.target as HTMLFormElement;
-    const data = new FormData(form);
-    // Append inquiry type for Formspree filtering
-    data.append('inquiryType', inquiryType);
+    const form = e.currentTarget;
 
     try {
-      // TODO: Replace with your actual Formspree endpoint
-      const response = await fetch('https://formspree.io/f/xovdlbyp', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
-        body: data,
         headers: {
-          'Accept': 'application/json'
-        }
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          inquiryType,
+          studyPreference: formData.studyPreference,
+          availability: formData.availability,
+          organization: formData.organization,
+          preferredDate: formData.preferredDate,
+        }),
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        setStatus('Thank you! Your message has been sent.');
+        setStatus(
+          typeof data.message === 'string'
+            ? data.message
+            : 'Thank you! Your message has been sent.'
+        );
         
         // Track form submission event
         trackFormSubmission('contact', inquiryType);
@@ -65,7 +77,11 @@ const ContactForm: React.FC = () => {
         setInquiryType('general');
         form.reset(); // Reset native form state
       } else {
-        setStatus('Oops! There was a problem submitting your form.');
+        setStatus(
+          typeof data.error === 'string'
+            ? data.error
+            : 'Oops! There was a problem submitting your form.'
+        );
       }
     } catch (err) {
       console.error('Form submission error:', err);
@@ -216,7 +232,15 @@ const ContactForm: React.FC = () => {
 
       {/* Status Message */}
       {status && (
-        <p className={`mt-4 text-center text-sm ${status.includes('Oops') ? 'text-red-600' : 'text-green-600'}`}>
+        <p
+          className={`mt-4 text-center text-sm ${
+            status === 'Submitting...'
+              ? 'text-gray-600'
+              : status.includes('Thank you')
+                ? 'text-green-600'
+                : 'text-red-600'
+          }`}
+        >
           {status}
         </p>
       )}

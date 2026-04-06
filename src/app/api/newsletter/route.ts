@@ -1,86 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, source, signupDate, customFields } = await request.json();
+    const body = await request.json();
+    const email = body.email;
 
     // Validate email
-    if (!email || !email.includes('@')) {
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
       return NextResponse.json(
         { error: 'Valid email address is required' },
         { status: 400 }
       );
     }
 
-    // Check for required environment variables
-    const apiKey = process.env.MAILERLITE_API_KEY;
+    const apiKey = process.env.RESEND_API_KEY;
+    const audienceId = process.env.RESEND_AUDIENCE_ID;
 
-    if (!apiKey) {
-      console.error('Missing MailerLite configuration. Check MAILERLITE_API_KEY in environment variables.');
+    if (!apiKey || !audienceId) {
+      console.error(
+        'Missing Resend newsletter configuration. Check RESEND_API_KEY and RESEND_AUDIENCE_ID in environment variables.'
+      );
       return NextResponse.json(
         { error: 'Newsletter service configuration error' },
         { status: 500 }
       );
     }
 
-    // Prepare the subscriber data for MailerLite
-    const subscriberData: any = {
-      email,
-      status: 'active', // Set subscriber as active
-      fields: {}, // MailerLite uses fields object instead of custom_fields array
-    };
+    const resend = new Resend(apiKey);
 
-    // Add source as a field if provided
-    if (source) {
-      subscriberData.fields.source = source;
-    }
-
-    // Add signup date as a field if provided
-    if (signupDate) {
-      subscriberData.fields.signup_date = signupDate;
-    }
-
-    // Add any additional custom fields
-    if (customFields && Array.isArray(customFields)) {
-      customFields.forEach(field => {
-        if (field.name && field.value) {
-          subscriberData.fields[field.name.toLowerCase().replace(/\s+/g, '_')] = field.value;
-        }
-      });
-    }
-
-    // Add IP address if available
-    const forwardedFor = request.headers.get('x-forwarded-for');
-    const realIp = request.headers.get('x-real-ip');
-    const ipAddress = forwardedFor?.split(',')[0] || realIp || null;
-    
-    if (ipAddress) {
-      subscriberData.ip_address = ipAddress;
-    }
-
-    // Add subscription timestamp
-    subscriberData.subscribed_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-    // Make request to MailerLite API
-    const response = await fetch('https://connect.mailerlite.com/api/subscribers', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(subscriberData),
+    const { data, error } = await resend.contacts.create({
+      email: email.trim(),
+      unsubscribed: false,
+      audienceId,
     });
 
-    const responseData = await response.json();
+    if (error) {
+      console.error('Resend Audiences error:', error);
 
-    if (!response.ok) {
-      console.error('MailerLite API error:', response.status, responseData);
-      
-      // Handle specific MailerLite errors
-      if (response.status === 422) {
-        // Validation errors
-        if (responseData.errors?.email) {
+      if (error.name === 'rate_limit_exceeded') {
+        return NextResponse.json(
+          { error: 'Too many requests. Please try again later.' },
+          { status: 429 }
+        );
+      }
+
+      if (error.name === 'missing_api_key' || error.name === 'invalid_api_Key') {
+        return NextResponse.json(
+          { error: 'Newsletter service authentication error' },
+          { status: 500 }
+        );
+      }
+
+      if (
+        error.name === 'validation_error' ||
+        error.name === 'invalid_parameter' ||
+        error.name === 'missing_required_field'
+      ) {
+        const msg = error.message?.toLowerCase() ?? '';
+        if (msg.includes('email')) {
           return NextResponse.json(
             { error: 'Please enter a valid email address' },
             { status: 400 }
@@ -91,46 +69,25 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      
-      if (response.status === 401) {
-        return NextResponse.json(
-          { error: 'Newsletter service authentication error' },
-          { status: 500 }
-        );
-      }
 
-      if (response.status === 429) {
-        return NextResponse.json(
-          { error: 'Too many requests. Please try again later.' },
-          { status: 429 }
-        );
-      }
-      
       return NextResponse.json(
         { error: 'Failed to subscribe to newsletter' },
-        { status: response.status }
+        { status: 500 }
       );
     }
 
-    console.log('Successfully subscribed to MailerLite:', responseData);
-
-    // Handle both creation (201) and update (200) responses
-    const isNewSubscriber = response.status === 201;
-    const subscriber = responseData.data;
+    console.log('Successfully added contact to Resend audience:', data);
 
     return NextResponse.json({
       success: true,
-      message: isNewSubscriber 
-        ? 'Successfully subscribed to newsletter!' 
-        : 'Email updated in newsletter!',
+      message: 'Successfully subscribed to newsletter!',
       data: {
-        id: subscriber.id,
-        email: subscriber.email,
-        status: subscriber.status,
-        isNew: isNewSubscriber
-      }
+        id: data.id,
+        email: email.trim(),
+        status: 'active',
+        isNew: true,
+      },
     });
-
   } catch (error) {
     console.error('Newsletter subscription error:', error);
     return NextResponse.json(
@@ -138,4 +95,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
