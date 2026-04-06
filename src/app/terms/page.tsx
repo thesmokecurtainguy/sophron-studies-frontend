@@ -186,14 +186,13 @@ export default function TermsOfServicePage() {
           Governing law and venue
         </h2>
         <p className="mb-6">
-          These Terms are governed by the laws of the State in which{' '}
-          {LEGAL_ENTITY} is organized, without regard to conflict-of-law
-          principles, except where preempted by applicable federal law. You agree
-          that the state and federal courts with jurisdiction over{' '}
-          {LEGAL_ENTITY}&apos;s principal place of business have exclusive
-          jurisdiction for disputes arising out of these Terms or the Services,
-          unless a different forum is required by applicable consumer protection
-          law for consumers in their home jurisdiction.
+          These Terms are governed by the laws of the State of North Carolina,
+          without regard to conflict-of-law principles, except where preempted by
+          applicable federal law. You agree that the state and federal courts
+          located in North Carolina have exclusive jurisdiction for disputes
+          arising out of these Terms or the Services, unless a different forum is
+          required by applicable consumer protection law for consumers in their
+          home jurisdiction.
         </p>
 
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mt-10 mb-3">
