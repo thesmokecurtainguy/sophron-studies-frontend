@@ -105,6 +105,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await resend.emails.send({
       from,
       to,
+      replyTo: email.trim(),
       subject: `New ${inquiryType} inquiry from ${name.trim()}`,
       text,
     });
