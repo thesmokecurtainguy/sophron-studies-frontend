@@ -1,4 +1,5 @@
-import { fetchSanity, urlFor } from '@/sanity/client';
+import { fetchSanity } from '@/sanity/server-client';
+import { urlFor } from '@/sanity/image';
 import { aboutPageQuery } from '@/sanity/queries';
 import type { AboutPageQueryResult } from '@/sanity/types';
 import AboutHero from '@/components/about/AboutHero';

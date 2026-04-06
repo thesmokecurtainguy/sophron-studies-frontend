@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { fetchSanity } from '@/sanity/client'
+import { fetchSanity } from '@/sanity/server-client'
 import { faqsGroupedByCategoryQuery } from '@/sanity/queries'
 import FaqAccordion from '@/components/faq/FaqAccordion'
 import type { BlockContent } from '@/sanity/types'
