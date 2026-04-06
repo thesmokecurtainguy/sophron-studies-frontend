@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { urlFor } from '@/sanity/client'
+import { urlFor } from '@/sanity/image'
 
 /**
  * SEO Data Types - Compatible with Sanity query results (which use null instead of undefined)

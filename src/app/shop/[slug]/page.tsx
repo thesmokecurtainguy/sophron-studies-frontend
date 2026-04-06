@@ -1,5 +1,6 @@
 import React from 'react';
-import { fetchSanity, urlFor } from '@/sanity/client';
+import { fetchSanity } from '@/sanity/server-client';
+import { urlFor } from '@/sanity/image';
 import { productBySlugQuery } from '@/sanity/queries';
 import type { ProductBySlugQueryResult } from '@/sanity/types';
 import { PortableText } from '@portabletext/react';
