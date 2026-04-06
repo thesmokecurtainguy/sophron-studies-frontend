@@ -63,12 +63,12 @@ export async function POST(request: NextRequest) {
     }
 
     const apiKey = process.env.RESEND_API_KEY;
-    const to = process.env.RESEND_TO_EMAIL;
+    const to = process.env.RESEND_TO_EMAIL_CONTACT;
     const from = process.env.RESEND_FROM_EMAIL;
 
     if (!apiKey || !to || !from) {
       console.error(
-        'Missing Resend contact configuration. Check RESEND_API_KEY, RESEND_TO_EMAIL, and RESEND_FROM_EMAIL.'
+        'Missing Resend contact configuration. Check RESEND_API_KEY, RESEND_TO_EMAIL_CONTACT, and RESEND_FROM_EMAIL.'
       );
       return NextResponse.json(
         { error: 'Contact service configuration error' },
