@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 const CONTACT_EMAIL = 'hello@sophronstudies.com'
-const LEGAL_ENTITY = 'SoFrontStudies LLC'
+const LEGAL_ENTITY = 'Sophron Studies LLC'
 const EFFECTIVE_DATE = 'April 6, 2026'
 const MAILTO = `mailto:${CONTACT_EMAIL}`
 

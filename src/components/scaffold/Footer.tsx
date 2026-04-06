@@ -19,7 +19,7 @@ const legalLinks = [
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6 mt-8">
-      <div className="container mx-auto px-6 flex flex-col md:flex-row md:justify-between md:max-w-8xl gap-8">
+      <div className="container mx-auto px-6 flex flex-col md:flex-row md:justify-between md:items-start md:max-w-8xl gap-8">
         {/* Brand & Copyright */}
         <div className="mb-6 md:mb-0">
           <div className="font-heading1 text-5xl text-creme mb-2">Sophron Studies</div>
@@ -37,31 +37,32 @@ const Footer: React.FC = () => {
           />
         </div>
         </div>
-        {/* Quick Links */}
-        <div className="flex flex-col gap-2">
-          <div className="font-semibold mb-1 text-creme">Quick Links</div>
-          {navLinks.map(link => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-gray-300 hover:text-gold transition-colors text-base"
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-        {/* Legal */}
-        <div className="flex flex-col gap-2">
-          <div className="font-semibold mb-1 text-creme">Legal</div>
-          {legalLinks.map(link => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-gray-300 hover:text-gold transition-colors text-base"
-            >
-              {link.name}
-            </Link>
-          ))}
+        {/* Quick Links + Legal: grouped so columns sit near each other */}
+        <div className="flex flex-row flex-wrap gap-10 md:gap-12 lg:gap-14">
+          <div className="flex flex-col gap-2">
+            <div className="font-semibold mb-1 text-creme">Quick Links</div>
+            {navLinks.map(link => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="text-gray-300 hover:text-gold transition-colors text-base"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="font-semibold mb-1 text-creme">Legal</div>
+            {legalLinks.map(link => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="text-gray-300 hover:text-gold transition-colors text-base"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
