@@ -11,6 +11,11 @@ const navLinks = [
   { name: 'Contact', href: '/contact' },
 ];
 
+const legalLinks = [
+  { name: 'Privacy Policy', href: '/privacy' },
+  { name: 'Terms of Service', href: '/terms' },
+];
+
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6 mt-8">
@@ -36,6 +41,19 @@ const Footer: React.FC = () => {
         <div className="flex flex-col gap-2">
           <div className="font-semibold mb-1 text-creme">Quick Links</div>
           {navLinks.map(link => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="text-gray-300 hover:text-gold transition-colors text-base"
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
+        {/* Legal */}
+        <div className="flex flex-col gap-2">
+          <div className="font-semibold mb-1 text-creme">Legal</div>
+          {legalLinks.map(link => (
             <Link
               key={link.name}
               href={link.href}
