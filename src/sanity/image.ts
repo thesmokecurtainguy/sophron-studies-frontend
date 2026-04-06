@@ -6,11 +6,16 @@ const imageBuilder = createImageUrlBuilder({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
 });
 
+/** Chainable image URL builder (e.g. `urlFor(asset).width(400).url()`). */
+export function urlFor(source: any) {
+  return imageBuilder.image(source);
+}
+
 export const urlForImage = (source: Image) => {
   if (!source?.asset?._ref) {
     return null;
   }
-  
+
   // Hotspot/crop is automatically respected when the source includes this data
   return imageBuilder.image(source).auto('format').fit('max').url();
 }; 
