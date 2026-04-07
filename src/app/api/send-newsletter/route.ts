@@ -1,11 +1,11 @@
 import { timingSafeEqual } from 'node:crypto';
 
-// import { render } from '@react-email/components';
+import { render } from '@react-email/components';
 import { NextRequest, NextResponse } from 'next/server';
-// import { createElement } from 'react';
+import { createElement } from 'react';
 import { Resend } from 'resend';
 
-// import NewsletterTemplate from '@/emails/NewsletterTemplate';
+import NewsletterTemplate from '@/emails/NewsletterTemplate';
 import { client } from '@/sanity/client';
 
 const RESEND_AUDIENCE_ID = '27e7b7c7-81cf-4613-b002-6ad46c330286';
@@ -156,30 +156,36 @@ export async function POST(request: NextRequest) {
     const previewText = (campaign.previewText ?? '').trim();
     const messageFromMelissa = toPlainText(campaign.messageFromMelissa).trim();
 
-    // TEMP(react-email isolate): restore when re-enabling NewsletterTemplate
-    // const featuredProduct =
-    //   campaign.featuredProduct?.slug ?
-    //     {
-    //       title: (campaign.featuredProduct.name ?? '').trim() || 'Featured study',
-    //       description: toPlainText(campaign.featuredProduct.description).trim(),
-    //       price: formatPrice(campaign.featuredProduct.price),
-    //       slug: campaign.featuredProduct.slug,
-    //       ...(campaign.featuredProduct.firstImageUrl ?
-    //         { imageUrl: campaign.featuredProduct.firstImageUrl }
-    //       : {}),
-    //     }
-    //   : undefined;
+    const featuredProduct =
+      campaign.featuredProduct?.slug ?
+        {
+          title: (campaign.featuredProduct.name ?? '').trim() || 'Featured study',
+          description: toPlainText(campaign.featuredProduct.description).trim(),
+          price: formatPrice(campaign.featuredProduct.price),
+          slug: campaign.featuredProduct.slug,
+          ...(campaign.featuredProduct.firstImageUrl ?
+            { imageUrl: campaign.featuredProduct.firstImageUrl }
+          : {}),
+        }
+      : undefined;
 
-    // const featuredPost =
-    //   campaign.featuredPost?.slug ?
-    //     {
-    //       title: (campaign.featuredPost.title ?? '').trim() || 'From the blog',
-    //       excerpt: toPlainText(campaign.featuredPost.excerpt).trim(),
-    //       slug: campaign.featuredPost.slug,
-    //     }
-    //   : undefined;
+    const featuredPost =
+      campaign.featuredPost?.slug ?
+        {
+          title: (campaign.featuredPost.title ?? '').trim() || 'From the blog',
+          excerpt: toPlainText(campaign.featuredPost.excerpt).trim(),
+          slug: campaign.featuredPost.slug,
+        }
+      : undefined;
 
-    const html = `<p>${messageFromMelissa}</p>`;
+    const html = await render(
+      createElement(NewsletterTemplate, {
+        previewText: previewText || title,
+        messageFromMelissa,
+        featuredProduct,
+        featuredPost,
+      })
+    );
 
     const resend = new Resend(apiKey);
 
