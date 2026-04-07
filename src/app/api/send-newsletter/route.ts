@@ -86,13 +86,29 @@ type CampaignDoc = {
 } | null;
 
 export async function POST(request: NextRequest) {
+  const origin = request.headers.get('origin') || '';
+  const allowedOrigins = [
+    'https://sophronstudies.sanity.studio',
+    'https://sanity.io',
+  ];
+
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : '',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+
+  function jsonWithCors(data: unknown, status: number) {
+    return NextResponse.json(data, { status, headers: corsHeaders });
+  }
+
   try {
     const expectedSecret = process.env.NEWSLETTER_SECRET;
     if (!expectedSecret) {
       console.error('NEWSLETTER_SECRET is not set');
-      return NextResponse.json(
+      return jsonWithCors(
         { error: 'Newsletter trigger is not configured on the server.' },
-        { status: 500 }
+        500
       );
     }
 
@@ -100,38 +116,38 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+      return jsonWithCors({ error: 'Invalid JSON body' }, 400);
     }
 
     const { campaignId, secret } = body;
 
     if (!campaignId || typeof campaignId !== 'string' || !campaignId.trim()) {
-      return NextResponse.json({ error: 'campaignId is required' }, { status: 400 });
+      return jsonWithCors({ error: 'campaignId is required' }, 400);
     }
 
     if (!secret || typeof secret !== 'string') {
-      return NextResponse.json({ error: 'secret is required' }, { status: 400 });
+      return jsonWithCors({ error: 'secret is required' }, 400);
     }
 
     if (!secretsMatch(secret, expectedSecret)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return jsonWithCors({ error: 'Unauthorized' }, 401);
     }
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       console.error('RESEND_API_KEY is not set');
-      return NextResponse.json(
+      return jsonWithCors(
         { error: 'Email service is not configured on the server.' },
-        { status: 500 }
+        500
       );
     }
 
     const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
     const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
     if (!projectId || !dataset) {
-      return NextResponse.json(
+      return jsonWithCors(
         { error: 'Content service is not configured on the server.' },
-        { status: 500 }
+        500
       );
     }
 
@@ -142,14 +158,14 @@ export async function POST(request: NextRequest) {
     );
 
     if (!campaign) {
-      return NextResponse.json({ error: 'Newsletter campaign not found' }, { status: 404 });
+      return jsonWithCors({ error: 'Newsletter campaign not found' }, 404);
     }
 
     const title = campaign.title?.trim();
     if (!title) {
-      return NextResponse.json(
+      return jsonWithCors(
         { error: 'Campaign is missing a title (required for subject line)' },
-        { status: 400 }
+        400
       );
     }
 
@@ -202,16 +218,16 @@ export async function POST(request: NextRequest) {
       console.error('Resend broadcast error:', error);
 
       if (error.name === 'rate_limit_exceeded') {
-        return NextResponse.json(
+        return jsonWithCors(
           { error: 'Too many requests. Please try again later.' },
-          { status: 429 }
+          429
         );
       }
 
       if (error.name === 'missing_api_key' || error.name === 'invalid_api_Key') {
-        return NextResponse.json(
+        return jsonWithCors(
           { error: 'Email service authentication failed' },
-          { status: 500 }
+          500
         );
       }
 
@@ -220,27 +236,46 @@ export async function POST(request: NextRequest) {
         error.name === 'invalid_parameter' ||
         error.name === 'missing_required_field'
       ) {
-        return NextResponse.json(
+        return jsonWithCors(
           { error: error.message || 'Invalid broadcast request' },
-          { status: 422 }
+          422
         );
       }
 
-      return NextResponse.json(
+      return jsonWithCors(
         { error: 'Failed to send newsletter broadcast' },
-        { status: 502 }
+        502
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      broadcastId: data.id,
-    });
+    return jsonWithCors(
+      {
+        success: true,
+        broadcastId: data.id,
+      },
+      200
+    );
   } catch (err) {
     console.error('send-newsletter error:', err);
-    return NextResponse.json(
+    return jsonWithCors(
       { error: 'Failed to process newsletter send request' },
-      { status: 500 }
+      500
     );
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin') || '';
+  const allowedOrigins = [
+    'https://sophronstudies.sanity.studio',
+    'https://sanity.io',
+  ];
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : '',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }
