@@ -36,7 +36,7 @@ export type NewsletterTemplateProps = {
 
 const fontLiterata = "'Literata', Georgia, serif";
 const fontInter = "'Inter', Arial, sans-serif";
-const fontLogo = "'Northwell', 'Pinyon Script', cursive";
+const fontLogo = "'Euphoria Script', 'Pinyon Script', cursive";
 
 const colors = {
   pageBg: '#f5f0e8',
@@ -73,6 +73,10 @@ export default function NewsletterTemplate({
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Euphoria+Script&display=swap"
           rel="stylesheet"
         />
       </Head>
