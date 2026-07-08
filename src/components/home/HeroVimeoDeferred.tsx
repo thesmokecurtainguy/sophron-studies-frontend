@@ -9,9 +9,9 @@ type HeroVimeoDeferredProps = {
 }
 
 /**
- * Defers embedding the Vimeo player until after first paint / idle time so the
- * poster (CSS background) can serve as LCP and less third-party work runs during load.
- * Skips video entirely when the user prefers reduced motion.
+ * Defers embedding the Vimeo player until after first paint so the poster (CSS
+ * background) can serve as LCP. Skips video entirely when the user prefers
+ * reduced motion.
  *
  * Uses standard embed params instead of background=1, which requires a paid Vimeo plan.
  */
@@ -23,24 +23,20 @@ export default function HeroVimeoDeferred({ vimeoId, iframeTitle }: HeroVimeoDef
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
 
     let cancelled = false
+    let frameId = 0
+
     const go = () => {
       if (!cancelled) setMountPlayer(true)
     }
 
-    const ric = window.requestIdleCallback
-    let idleId: number | undefined
-    let timeoutId: ReturnType<typeof setTimeout> | undefined
-
-    if (typeof ric === 'function') {
-      idleId = ric.call(window, go, { timeout: 2200 })
-    } else {
-      timeoutId = setTimeout(go, 2000)
-    }
+    // Wait two animation frames so the SSR poster can paint before third-party work.
+    frameId = requestAnimationFrame(() => {
+      frameId = requestAnimationFrame(go)
+    })
 
     return () => {
       cancelled = true
-      if (idleId !== undefined) window.cancelIdleCallback(idleId)
-      if (timeoutId !== undefined) clearTimeout(timeoutId)
+      cancelAnimationFrame(frameId)
     }
   }, [])
 
@@ -52,7 +48,6 @@ export default function HeroVimeoDeferred({ vimeoId, iframeTitle }: HeroVimeoDef
       src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&controls=0&title=0&byline=0&portrait=0&playsinline=1`}
       className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
       allow="autoplay; fullscreen"
-      loading="lazy"
       style={{
         pointerEvents: 'none',
         width: 'max(100%, calc(100vh * 16/9))',

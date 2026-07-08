@@ -22,8 +22,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* Ensure body is the only direct child. 
-          Remove comments between <html> and <body> just in case */}
+      <head>
+        <link rel="preconnect" href="https://player.vimeo.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://f.vimeocdn.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://i.vimeocdn.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+      </head>
       <body 
         className={`${fontInter.variable} ${fontLiterata.variable} ${fontNorthwell.variable} font-sans antialiased`}
       >

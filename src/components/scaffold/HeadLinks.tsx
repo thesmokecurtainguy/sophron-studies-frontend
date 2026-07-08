@@ -1,7 +1,6 @@
 /**
- * Component to add preconnect and dns-prefetch links to the document head
- * Also removes Vercel Live Feedback script (injected automatically by Vercel)
- * Uses a script that runs immediately to ensure links are added early
+ * Removes Vercel Live Feedback script (injected automatically by Vercel).
+ * Preconnect hints live in the root layout <head> for earlier discovery.
  */
 export default function HeadLinks() {
   return (
@@ -10,18 +9,6 @@ export default function HeadLinks() {
         __html: `
           (function() {
             if (typeof document !== 'undefined') {
-              // Add preconnect hints for faster resource loading
-              var preconnect = document.createElement('link');
-              preconnect.rel = 'preconnect';
-              preconnect.href = 'https://player.vimeo.com';
-              preconnect.crossOrigin = 'anonymous';
-              document.head.appendChild(preconnect);
-              
-              var dnsPrefetch = document.createElement('link');
-              dnsPrefetch.rel = 'dns-prefetch';
-              dnsPrefetch.href = 'https://cdn.sanity.io';
-              document.head.appendChild(dnsPrefetch);
-              
               // Remove Vercel Live Feedback script (injected automatically by Vercel)
               // This script is only useful during development and adds unnecessary weight
               var removeVercelLive = function() {
