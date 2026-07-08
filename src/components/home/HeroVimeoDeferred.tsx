@@ -45,7 +45,7 @@ export default function HeroVimeoDeferred({ vimeoId, iframeTitle }: HeroVimeoDef
   return (
     <iframe
       title={iframeTitle}
-      src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&controls=0&title=0&byline=0&portrait=0&playsinline=1`}
+      src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&autopause=0&muted=1&controls=0&title=0&byline=0&portrait=0&playsinline=1`}
       className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
       allow="autoplay; fullscreen"
       style={{
