@@ -33,15 +33,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     <section className="w-full min-h-[35vh] md:min-h-[50vh] lg:min-h-[65vh] flex items-center justify-center bg-olive relative overflow-hidden">
       {/* Background Video or Image */}
       {vimeoId ? (
-        <div 
-          className="absolute inset-0 w-full h-full overflow-hidden"
-          style={{
-            backgroundImage: posterImageUrl ? `url(${posterImageUrl})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        >
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          {posterImageUrl ? (
+            <Image
+              src={posterImageUrl}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              quality={75}
+              className="object-cover"
+            />
+          ) : null}
           <HeroVimeoDeferred
             vimeoId={vimeoId}
             iframeTitle="Decorative background video for Sophron Studies"
@@ -89,4 +92,4 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   );
 };
 
-export default HeroSection; 
+export default HeroSection;

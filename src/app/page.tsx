@@ -133,8 +133,8 @@ export default async function Home() {
           } : undefined}
           posterImageUrl={data.heroSection.backgroundImage?.asset && data.heroSection.vimeoUrl
             ? urlFor(data.heroSection.backgroundImage.asset)
-                .width(1920)
-                .quality(80)
+                .width(2400)
+                .quality(85)
                 .auto('format')
                 .url()
             : undefined}
