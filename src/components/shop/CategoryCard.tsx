@@ -16,7 +16,7 @@ interface CategoryCardProps {
 const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   return (
     <Link 
-      href={`/shop?category=${category.slug.current}#studies`}
+      href={`/shop/category/${category.slug.current}`}
       className="block bg-white border border-gray-200 hover:border-gray-300 transition-colors duration-200 h-full"
     >
       <div className="p-6 h-full flex flex-col">

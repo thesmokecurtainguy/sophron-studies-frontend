@@ -92,19 +92,23 @@ export default async function ProductDetailPage({
   // Create back link based on referrer information
   const createBackLink = () => {
     const { from_category, from_page, from_search } = referrerParams;
-    
-    // If we have referrer info, reconstruct the shop URL
-    if (from_category || from_search) {
+
+    // Search results still use the /shop query-param browse experience
+    if (from_search) {
       const params = new URLSearchParams();
-      
       if (from_category) params.set('category', from_category);
       if (from_page) params.set('page', from_page);
-      if (from_search) params.set('search', from_search);
-      
-      const queryString = params.toString();
-      return `/shop${queryString ? `?${queryString}` : ''}#studies`;
+      params.set('search', from_search);
+      return `/shop?${params.toString()}#studies`;
     }
-    
+
+    // Category referrers return to the dedicated category page
+    if (from_category) {
+      const pageQuery =
+        from_page && from_page !== '1' ? `?page=${from_page}` : '';
+      return `/shop/category/${from_category}${pageQuery}`;
+    }
+
     // Default fallback to categories view
     return '/shop#studies';
   };

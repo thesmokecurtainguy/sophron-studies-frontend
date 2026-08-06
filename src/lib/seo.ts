@@ -207,6 +207,50 @@ export function generateWebSiteAndOrganizationJsonLd(
   }
 }
 
+export interface CollectionPageStructuredDataInput {
+  name: string
+  description: string
+  url: string
+}
+
+/**
+ * Generate Schema.org CollectionPage structured data
+ */
+export function generateCollectionPageStructuredData(
+  input: CollectionPageStructuredDataInput
+): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: input.name,
+    description: input.description,
+    url: input.url,
+  }
+}
+
+export interface BreadcrumbStructuredDataItem {
+  name: string
+  url: string
+}
+
+/**
+ * Generate Schema.org BreadcrumbList structured data
+ */
+export function generateBreadcrumbStructuredData(
+  items: BreadcrumbStructuredDataItem[]
+): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  }
+}
+
 /**
  * Get image alt text from Sanity image object
  */
