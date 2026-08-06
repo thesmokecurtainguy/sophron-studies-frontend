@@ -6,11 +6,11 @@ import localFont from 'next/font/local';
 export const fontInter = localFont({
   src: [
     {
-      path: '../fonts/Inter/Inter-VariableFont_opsz,wght.ttf',
+      path: '../fonts/Inter/Inter-VariableFont_opsz,wght.woff2',
       style: 'normal',
     },
     {
-      path: '../fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf',
+      path: '../fonts/Inter/Inter-Italic-VariableFont_opsz,wght.woff2',
       style: 'italic',
     },
   ],
@@ -22,11 +22,11 @@ export const fontInter = localFont({
 export const fontLiterata = localFont({
   src: [
     {
-      path: '../fonts/Literata/Literata-VariableFont_opsz,wght.ttf',
+      path: '../fonts/Literata/Literata-VariableFont_opsz,wght.woff2',
       style: 'normal',
     },
     {
-      path: '../fonts/Literata/Literata-Italic-VariableFont_opsz,wght.ttf',
+      path: '../fonts/Literata/Literata-Italic-VariableFont_opsz,wght.woff2',
       style: 'italic',
     },
   ],
@@ -36,7 +36,7 @@ export const fontLiterata = localFont({
 
 // Northwell - Single weight font
 export const fontNorthwell = localFont({
-  src: '../fonts/Northwell/Northwell.ttf',
+  src: '../fonts/Northwell/Northwell.woff2',
   variable: '--font-northwell',
   display: 'swap',
 });
