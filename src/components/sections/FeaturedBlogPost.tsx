@@ -86,7 +86,6 @@ const FeaturedBlogPost: React.FC<FeaturedBlogPostProps> = ({
                   alt={imageAlt + ' 3'}
                   fill
                   style={{ objectFit: 'cover' }}
-                  priority
                   sizes="(max-width: 768px) 60vw, 30vw"
                 />
               ) : (

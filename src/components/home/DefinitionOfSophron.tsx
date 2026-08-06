@@ -46,7 +46,6 @@ const DefinitionOfSophron: React.FC<DefinitionOfSophronProps> = ({
                   alt={imageAlt + " 1"}
                   fill
                   style={{ objectFit: "cover" }}
-                  priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               ) : (
@@ -60,7 +59,6 @@ const DefinitionOfSophron: React.FC<DefinitionOfSophronProps> = ({
                   alt={imageAlt + " 2"}
                   fill
                   style={{ objectFit: "cover" }}
-                  priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               ) : (

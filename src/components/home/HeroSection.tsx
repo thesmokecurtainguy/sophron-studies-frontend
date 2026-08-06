@@ -1,63 +1,43 @@
 import React from 'react';
 import Image from 'next/image';
-import HeroVimeoDeferred from '@/components/home/HeroVimeoDeferred';
+import HeroVideoDeferred from '@/components/home/HeroVideoDeferred';
 
 interface HeroSectionProps {
   /** Used for a single accessible H1 (screen-reader or visible later from CMS) */
   headingText?: string;
-  vimeoUrl?: string;
   backgroundImage?: {
     url: string;
     alt: string;
   };
-  posterImageUrl?: string; // Poster image URL for Vimeo iframe background
+  posterImageUrl?: string; // Poster image URL for LCP before deferred video mounts
   overlayOpacity?: number; // 0-1, defaults to 0.3
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ 
   headingText,
-  vimeoUrl, 
   backgroundImage, 
   posterImageUrl,
   overlayOpacity = 0.3 
 }) => {
-  // Extract Vimeo video ID from URL
-  const getVimeoId = (url: string): string | null => {
-    const match = url.match(/vimeo\.com\/(?:.*\/)?(\d+)/);
-    return match ? match[1] : null;
-  };
-
-  const vimeoId = vimeoUrl ? getVimeoId(vimeoUrl) : null;
+  const posterSrc = posterImageUrl || backgroundImage?.url;
 
   return (
     <section className="w-full min-h-[35vh] md:min-h-[50vh] lg:min-h-[65vh] flex items-center justify-center bg-olive relative overflow-hidden">
-      {/* Background Video or Image */}
-      {vimeoId ? (
-        <div 
-          className="absolute inset-0 w-full h-full overflow-hidden"
-          style={{
-            backgroundImage: posterImageUrl ? `url(${posterImageUrl})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        >
-          <HeroVimeoDeferred
-            vimeoId={vimeoId}
-            iframeTitle="Decorative background video for Sophron Studies"
-          />
-        </div>
-      ) : backgroundImage ? (
-        <div className="absolute inset-0">
+      {/* Background poster + deferred self-hosted video */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        {posterSrc ? (
           <Image
-            src={backgroundImage.url}
-            alt={backgroundImage.alt}
+            src={posterSrc}
+            alt=""
             fill
-            className="object-cover"
             priority
+            sizes="100vw"
+            quality={75}
+            className="object-cover"
           />
-        </div>
-      ) : null}
+        ) : null}
+        <HeroVideoDeferred />
+      </div>
       
       {/* Overlay */}
       <div 
@@ -80,13 +60,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             priority
           />
         </div>
-        {/* Use heading-hero class */}
-        {/* <h1 className="heading-hero text-gray-800">
-          {title}
-        </h1> */}
       </div>
     </section>
   );
 };
 
-export default HeroSection; 
+export default HeroSection;

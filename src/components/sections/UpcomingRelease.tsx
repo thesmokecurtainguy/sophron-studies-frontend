@@ -75,7 +75,6 @@ const UpcomingRelease: React.FC<UpcomingReleaseProps> = ({
                   alt={imageAlt + " 1"}
                   fill
                   style={{ objectFit: 'cover' }}
-                  priority
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
               ) : (
@@ -90,7 +89,6 @@ const UpcomingRelease: React.FC<UpcomingReleaseProps> = ({
                   alt={imageAlt + " 2"}
                   fill
                   style={{ objectFit: 'cover' }}
-                  priority
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
               ) : (

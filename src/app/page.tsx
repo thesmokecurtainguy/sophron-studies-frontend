@@ -122,7 +122,6 @@ export default async function Home() {
             safeString(data.title) ||
             'Sophron Studies — Reformed Bible studies for women'
           }
-          vimeoUrl={data.heroSection.vimeoUrl || undefined}
           backgroundImage={data.heroSection.backgroundImage?.asset ? {
             url: urlFor(data.heroSection.backgroundImage.asset)
               .width(1920)
@@ -131,10 +130,10 @@ export default async function Home() {
               .url(),
             alt: safeString(data.heroSection.backgroundImage.alt)
           } : undefined}
-          posterImageUrl={data.heroSection.backgroundImage?.asset && data.heroSection.vimeoUrl
+          posterImageUrl={data.heroSection.backgroundImage?.asset
             ? urlFor(data.heroSection.backgroundImage.asset)
-                .width(1920)
-                .quality(80)
+                .width(2400)
+                .quality(85)
                 .auto('format')
                 .url()
             : undefined}
