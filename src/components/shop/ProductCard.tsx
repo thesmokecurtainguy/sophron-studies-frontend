@@ -34,9 +34,11 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
+  /** Category slug when not present in URL search params (e.g. /shop/category/[slug]) */
+  fromCategory?: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, fromCategory }) => {
   const { addItem, openCart } = useCart();
   const searchParams = useSearchParams();
 
@@ -46,8 +48,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const createProductLink = () => {
     const referrerParams = new URLSearchParams();
     
-    // Capture current filters/pagination
-    const category = searchParams.get('category');
+    // Capture current filters/pagination (prop wins for dedicated category routes)
+    const category = fromCategory || searchParams.get('category');
     const page = searchParams.get('page');
     const search = searchParams.get('search');
     

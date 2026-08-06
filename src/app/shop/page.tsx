@@ -9,6 +9,8 @@ import ScrollManager from '@/components/scaffold/ScrollManager';
 import ProductCard from '@/components/shop/ProductCard'; // We'll create this component
 import CategoryCard from '@/components/shop/CategoryCard';
 import { homePageUpcomingReleasesQuery } from '@/sanity/queries/upcomingrelease.queries';
+import { generateMetadata as generateSEOMetadata, generateBreadcrumbStructuredData } from '@/lib/seo';
+import type { Metadata } from 'next';
 
 // Define Types for fetched data
 interface SanityImageReference {
@@ -167,6 +169,14 @@ interface SearchParamsType {
   search?: string;
 }
 
+export async function generateMetadata(): Promise<Metadata> {
+  return generateSEOMetadata(
+    null,
+    'Shop Bible Studies for Women | Sophron Studies',
+    'Browse our collection of inductive Bible studies including Old Testament, New Testament, prayer books, and topical studies. Leader guides available.'
+  );
+}
+
 export default async function Shop({ 
   searchParams 
 }: { 
@@ -207,8 +217,19 @@ export default async function Shop({
 
   const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: baseUrl },
+    { name: 'Shop', url: `${baseUrl}/shop` },
+  ]);
+
   return (
     <div className="space-y-16 md:space-y-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+      />
+
       {/* ScrollManager to handle hash navigation */}
       <ScrollManager />
       

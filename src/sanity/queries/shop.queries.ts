@@ -84,4 +84,60 @@ export const allProductSlugsQuery = defineQuery(`*[
   _type == "product"
   && defined(slug.current)
   && isAvailable == true
-].slug.current`) 
+].slug.current`)
+
+// Get a single category by slug (with SEO)
+export const categoryBySlugQuery = defineQuery(`*[
+  _type == "category"
+  && slug.current == $slug
+][0]{
+  _id,
+  title,
+  slug,
+  description,
+  seo {
+    metaTitle,
+    metaDescription,
+    metaKeywords,
+    ogImage {alt, asset->},
+    ogTitle,
+    ogDescription,
+    canonicalUrl,
+    noIndex,
+    noFollow
+  },
+  "productCount": count(*[_type == "product" && isAvailable == true && !(_id in path("drafts.**")) && references(^._id)])
+}`)
+
+// Category slugs that have at least one available product (for generateStaticParams)
+export const allCategorySlugsQuery = defineQuery(`*[
+  _type == "category"
+  && defined(slug.current)
+  && count(*[_type == "product" && isAvailable == true && !(_id in path("drafts.**")) && references(^._id)]) > 0
+].slug.current`)
+
+// Paginated products for a single category by slug
+export const productsByCategorySlugQuery = defineQuery(`{
+  "products": *[
+    _type == "product" &&
+    isAvailable == true &&
+    !(_id in path("drafts.**")) &&
+    $categorySlug in categories[]->slug.current
+  ] | order(_createdAt desc)[$start...$end] {
+    _id,
+    name,
+    slug,
+    images[]{..., asset->},
+    price,
+    externalUrl,
+    categories[]->{_id, title, slug},
+    sizes,
+    _createdAt
+  },
+  "totalProducts": count(*[
+    _type == "product" &&
+    isAvailable == true &&
+    !(_id in path("drafts.**")) &&
+    $categorySlug in categories[]->slug.current
+  ])
+}`) 
