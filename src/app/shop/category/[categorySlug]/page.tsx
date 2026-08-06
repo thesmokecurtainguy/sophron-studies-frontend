@@ -18,6 +18,19 @@ import {
 const PRODUCTS_PER_PAGE = 6;
 const MAX_CATEGORY_PAGE = 1000;
 
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+] as const;
+
+type SortOrder = (typeof SORT_OPTIONS)[number]['value'];
+
+function parseSortOrder(value?: string): SortOrder {
+  if (value === 'price-asc' || value === 'price-desc') return value;
+  return 'newest';
+}
+
 interface CategoryBySlug {
   _id: string;
   title: string;
@@ -61,6 +74,7 @@ interface CategorySlugParams {
 
 interface SearchParamsType {
   page?: string;
+  sort?: string;
 }
 
 async function getCategory(slug: string): Promise<CategoryBySlug | null> {
@@ -78,7 +92,8 @@ async function getCategory(slug: string): Promise<CategoryBySlug | null> {
 
 async function getCategoryProducts(
   categorySlug: string,
-  page: number
+  page: number,
+  sortOrder: SortOrder
 ): Promise<PaginatedProductsResult> {
   const safePage = Math.min(Math.max(page, 1), MAX_CATEGORY_PAGE);
   const start = (safePage - 1) * PRODUCTS_PER_PAGE;
@@ -87,7 +102,7 @@ async function getCategoryProducts(
   try {
     return await fetchSanity<PaginatedProductsResult>(
       productsByCategorySlugQuery,
-      { categorySlug, start, end },
+      { categorySlug, start, end, sortOrder },
       { revalidate: 120, tags: ['products', `category-${categorySlug}`] }
     );
   } catch (error) {
@@ -98,6 +113,23 @@ async function getCategoryProducts(
 
 function getBaseUrl() {
   return process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+}
+
+function buildCategoryHref(
+  categorySlug: string,
+  options: { page?: number; sort?: SortOrder } = {}
+) {
+  const params = new URLSearchParams();
+  if (options.page && options.page > 1) {
+    params.set('page', String(options.page));
+  }
+  if (options.sort && options.sort !== 'newest') {
+    params.set('sort', options.sort);
+  }
+  const query = params.toString();
+  return query
+    ? `/shop/category/${categorySlug}?${query}`
+    : `/shop/category/${categorySlug}`;
 }
 
 export async function generateStaticParams() {
@@ -146,6 +178,7 @@ export default async function CategoryPage({
   const pageParam = resolvedSearchParams.page;
   const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
   const validPage = isNaN(currentPage) || currentPage < 1 ? 1 : currentPage;
+  const sortOrder = parseSortOrder(resolvedSearchParams.sort);
 
   const category = await getCategory(categorySlug);
   if (!category) {
@@ -154,9 +187,11 @@ export default async function CategoryPage({
 
   const { products, totalProducts } = await getCategoryProducts(
     categorySlug,
-    validPage
+    validPage,
+    sortOrder
   );
   const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+  const productCount = category.productCount ?? totalProducts;
 
   const baseUrl = getBaseUrl().replace(/\/$/, '');
   const categoryUrl = `${baseUrl}/shop/category/${categorySlug}`;
@@ -174,9 +209,7 @@ export default async function CategoryPage({
   });
 
   const paginationHref = (page: number) =>
-    page <= 1
-      ? `/shop/category/${categorySlug}`
-      : `/shop/category/${categorySlug}?page=${page}`;
+    buildCategoryHref(categorySlug, { page, sort: sortOrder });
 
   return (
     <div className="container mx-auto px-4 pb-16 pt-8 md:max-w-6xl">
@@ -220,7 +253,35 @@ export default async function CategoryPage({
             {category.description}
           </p>
         )}
+        {typeof productCount === 'number' && (
+          <p className="text-sm text-gray-500 mt-4">
+            Showing {productCount} {productCount === 1 ? 'study' : 'studies'}
+          </p>
+        )}
       </header>
+
+      <div className="flex flex-wrap justify-end items-center gap-3 mb-8">
+        <span className="text-sm text-gray-500">Sort by</span>
+        <nav aria-label="Sort products" className="flex flex-wrap gap-2 text-sm">
+          {SORT_OPTIONS.map((option) => {
+            const isActive = sortOrder === option.value;
+            return (
+              <Link
+                key={option.value}
+                href={buildCategoryHref(categorySlug, { sort: option.value })}
+                className={`px-3 py-1 border rounded-sm ${
+                  isActive
+                    ? 'bg-gray-100 text-gray-900 border-gray-400'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                aria-current={isActive ? 'true' : undefined}
+              >
+                {option.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
       {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12 px-8 md:px-0">

@@ -117,13 +117,18 @@ export const allCategorySlugsQuery = defineQuery(`*[
 ].slug.current`)
 
 // Paginated products for a single category by slug
+// $sortOrder: "newest" (default) | "price-asc" | "price-desc"
 export const productsByCategorySlugQuery = defineQuery(`{
   "products": *[
     _type == "product" &&
     isAvailable == true &&
     !(_id in path("drafts.**")) &&
     $categorySlug in categories[]->slug.current
-  ] | order(_createdAt desc)[$start...$end] {
+  ] | order(
+    select($sortOrder == "price-asc" => price) asc,
+    select($sortOrder == "price-desc" => price) desc,
+    _createdAt desc
+  )[$start...$end] {
     _id,
     name,
     slug,
