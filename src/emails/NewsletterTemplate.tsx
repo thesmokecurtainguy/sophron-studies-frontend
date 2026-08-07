@@ -192,7 +192,7 @@ export default function NewsletterTemplate({
                     margin: '0 0 24px',
                   }}
                 >
-                  New Release
+                  Coming Soon
                 </Heading>
                 {featuredProduct.imageUrl ? (
                   <Img
