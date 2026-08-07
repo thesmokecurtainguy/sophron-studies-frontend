@@ -16,7 +16,6 @@ interface UpcomingReleaseProps {
 }
 
 const UpcomingRelease: React.FC<UpcomingReleaseProps> = ({
-  status,
   backgroundTheme,
   titlePart1,
   titlePart2,
@@ -27,9 +26,9 @@ const UpcomingRelease: React.FC<UpcomingReleaseProps> = ({
   buttonText,
   buttonLink,
 }) => {
-  // Status text mapping
-  const statusText = status === 'newRelease' ? 'NEW RELEASE' : 'COMING SOON';
-  
+  // Display label for both CMS statuses (`newRelease` and `comingSoon`)
+  const statusText = 'COMING SOON';
+
   // Theme-based styling
   const isDark = backgroundTheme === 'dark';
   const sectionClasses = isDark 
